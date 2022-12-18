@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('src/file/file').promises;
 
 const filename = './data.txt';
 const encoding = 'utf-8';
