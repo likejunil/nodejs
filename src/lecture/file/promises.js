@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/file/promises.js
 const fs = require('fs').promises;
+=======
+const fs = require('src/lecture/file/file').promises;
+>>>>>>> e5de93696f0c339a83763e24b4443462b01d283e:src/lecture/file/promises.js
 
 const filename = './data.txt';
 const encoding = 'utf-8';
