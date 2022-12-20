@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('src/lecture/path');
 
 /**
  * __dirname, __filename 속성은..
