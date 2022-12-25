@@ -24,12 +24,10 @@ app.use(helmet());
 app.use(morgan(logFormat));
 app.use(isAuth);
 
-/* req url: tweets */
-app.use(url.TWEETS, tweetsRouter);
-/* req url: users */
-app.use(url.USERS, usersRouter);
 /* req url: auth */
 app.use(url.AUTH, authRouter);
+/* req url: tweets */
+app.use(url.TWEETS, tweetsRouter);
 
 /* not found */
 app.use((req, res, next) => {
