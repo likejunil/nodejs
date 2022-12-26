@@ -12,7 +12,7 @@ const ID_LEN = 8;
  *     "joinAt": Date,
  * }
  */
-const data = [];
+const users = [];
 
 /**
  * 사용자가 식별 가능한 unique 속성인 username 으로 사용자 검색
@@ -21,7 +21,7 @@ const data = [];
  * @returns {Promise<*>}
  */
 export async function findByUsername(username) {
-    return data.find(m => m.username === username);
+    return users.find(m => m.username === username);
 }
 
 /**
@@ -31,7 +31,7 @@ export async function findByUsername(username) {
  * @returns {Promise<*>}
  */
 export async function findById(id) {
-    return data.find(m => m.id === id);
+    return users.find(m => m.id === id);
 }
 
 /**
@@ -50,7 +50,7 @@ export async function create(user) {
         email,
         joinAt: Date(),
     };
-    data.push(m);
+    users.push(m);
     return m;
 }
 
@@ -60,5 +60,5 @@ export async function create(user) {
  * @returns {Promise<*[]>}
  */
 export async function findAll() {
-    return data;
+    return users;
 }

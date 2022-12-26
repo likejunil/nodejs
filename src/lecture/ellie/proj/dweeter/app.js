@@ -5,11 +5,10 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import 'express-async-errors';
 
-import {logFormat, port} from "./configure/env.js";
+import {config} from "./configure/config.js";
 import CONSTANT from "./configure/CONSTANT.js";
 
 import tweetsRouter from "./router/tweetsRout.js";
-import usersRouter from "./router/usersRout.js";
 import authRouter from "./router/authRout.js";
 import {isAuth} from "./middleware/authToken/jwtAuth.js";
 
@@ -21,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
-app.use(morgan(logFormat));
+app.use(morgan(config.morgan.logLevel));
 app.use(isAuth);
 
 /* req url: auth */
@@ -41,4 +40,4 @@ app.use((error, req, res, next) => {
 });
 
 /* app start */
-app.listen(port);
+app.listen(config.network.port);

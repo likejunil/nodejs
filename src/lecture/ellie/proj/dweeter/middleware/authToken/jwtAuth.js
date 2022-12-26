@@ -1,17 +1,16 @@
 import jwt from 'jsonwebtoken';
 import * as repository from '../../repository/authRepo.js';
+import {config} from '../../configure/config.js';
 
 const AUTH_HEADER = 'Authorization';
 const AUTH_PREFIX = 'Bearer';
-const AUTH_KEY = 'FVLNBQvZypbJMbwzAnGpgazPnsrdaCiK';
-const JWT_EXPIRES_IN = '2d';
 const AUTH_PASS = [
     '/auth/login',
     '/auth/signup',
 ];
 
 export const createJwt = (data) => {
-    return jwt.sign({id: data}, AUTH_KEY, {expiresIn: JWT_EXPIRES_IN});
+    return jwt.sign({id: data}, config.jwt.secretKey, {expiresIn: config.jwt.expiresInSecs});
 };
 
 const isPass = (path) => {
@@ -30,7 +29,7 @@ export const isAuth = (req, res, next) => {
     }
     
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, AUTH_KEY, async (error, decoded) => {
+    jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
         if (error) {
             console.error(`토큰 검증 실패=|${error}|`);
             return res.status(401).json({message: '인증에 실패하였습니다.'});
