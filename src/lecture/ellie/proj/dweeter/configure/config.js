@@ -27,4 +27,12 @@ export const config = {
     network: {
         port: parseInt(required('PORT', 8090)),
     },
+    
+    db: {
+        host: required('DB_HOST', '127.0.0.1'),
+        port: parseInt(required('DB_PORT', 3306)),
+        user: required('DB_USER', 'june1'),
+        pass: required('DB_PASS', 'qweQWE123!@#'),
+        database: required('DB_DATABASE', 'dweeter'),
+    }
 };
