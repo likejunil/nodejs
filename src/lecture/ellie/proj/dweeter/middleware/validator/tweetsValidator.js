@@ -3,19 +3,19 @@ import {handleResult} from "./validator.js";
 
 function text() {
     return body('text').trim()
-        .isLength({min: 1, max: 100})
-        .withMessage('최소 1자, 최대 100 이내의 글을 작성해 주세요.');
+        .isLength({min: 1})
+        .withMessage('최소 1자 이상의 글을 작성하여 주십시오.');
 }
 
-export default function validator(path) {
-    switch (path) {
-        case '/':
+const validator = (method, path) => {
+    switch (`${method.toLowerCase()}|${path}`) {
+        case 'post|/':
             return [
                 text(),
                 handleResult,
             ];
         
-        case '/:id':
+        case 'put|/:id':
             return [
                 text(),
                 handleResult,
@@ -26,3 +26,5 @@ export default function validator(path) {
             return [];
     }
 }
+
+export default validator;

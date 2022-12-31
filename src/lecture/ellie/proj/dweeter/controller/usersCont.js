@@ -1,6 +1,8 @@
-import * as repository from '../repository/authRepo.js';
 import bcrypt from 'bcrypt';
-import {createJwt} from "../middleware/authToken/jwtAuth.js";
+
+import config from "../configure/config.js";
+import {createJwt} from "../middleware/auth/jwtAuth.js";
+import * as repository from '../repository/usersMemRepo.js';
 
 /**
  * << 회원 가입 >>
@@ -10,22 +12,23 @@ import {createJwt} from "../middleware/authToken/jwtAuth.js";
  */
 export async function signup(req, res, next) {
     // 1.해당 username 의 사용자가 이미 존재하는지 검증
-    const {username, password, email, name,} = req.body;
+    const {username, password: plain, name, email} = req.body;
     const find = await repository.findByUsername(username);
     if (find) {
+        console.log(`중복 사용자 회원 가입 시도 = |${username}|`)
         return res.status(409).json({message: "해당 사용자가 이미 존재합니다."});
     }
     
     // 2.사용자 계정 생성 및 저장
-    const hashed = await bcrypt.hash(password, 10);
-    const user = {username, password: hashed, email, name,};
+    const password = await bcrypt.hash(plain, config.bcrypt.saltRounds);
+    const user = {username, password, name, email};
     const save = await repository.create(user);
     
     // 3.jwt 생성
     const accessToken = createJwt(save.id);
     
     // 4.계정 반환
-    const ret = {...save, password: '', accessToken,};
+    const ret = {...save, password: '*****', accessToken,};
     res.status(201).json(ret);
 }
 
@@ -40,12 +43,14 @@ export async function login(req, res, next) {
     const {username, password} = req.body;
     const find = await repository.findByUsername(username);
     if (!find) {
+        console.error(`로그인 아이디 실패 = |${username}|`);
         return res.status(401).json({message: "아이디 혹은 패스워드를 확인해 주세요."});
     }
     
     // 2.패스워드 검증
     const check = await bcrypt.compare(password, find.password);
     if (!check) {
+        console.error(`로그인 패스워드 실패 = |${password}|`);
         return res.status(401).json({message: "아이디 혹은 패스워드를 확인해 주세요."});
     }
     

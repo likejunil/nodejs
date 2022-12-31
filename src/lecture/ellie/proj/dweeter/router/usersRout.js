@@ -1,24 +1,19 @@
 import express from 'express';
-import validator from '../middleware/validator/usersValidator.js';
+import 'express-async-errors'
 
+import validator from '../middleware/validator/usersValidator.js';
+import * as controller from '../controller/usersCont.js';
+
+/** path: auth */
 const router = express.Router();
 
 /**
- * user = {
- *     "name": "준일",
- *     "age": 38,
- *     "email": "likejunil@gmail.com",
- *     "job": {
- *         "company": "june1",
- *         "title": "happy"
- *     }
- * }
+ * GET /users/list
+ * POST /users/signup
+ * POST /users/login
  */
-
-router.post("/:color", validator('/:color'), (req, res, next) => {
-        console.log(req.body);
-        res.sendStatus(201);
-    }
-);
+router.get("/list", controller.getAll);
+router.post("/signup", validator("post", "/signup"), controller.signup);
+router.post("/login", validator("post", "/login"), controller.login);
 
 export default router;
