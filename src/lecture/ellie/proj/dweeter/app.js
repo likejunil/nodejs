@@ -9,6 +9,8 @@ import config from "./configure/config.js";
 import CONSTANT from "./configure/CONSTANT.js";
 
 import {authProc} from "./middleware/auth/jwtAuth.js";
+import {initSocket} from "./middleware/socketio/socketio.js";
+import sequelize from './repository/sequelize/initSequelize.js';
 import tweetsRouter from "./router/tweetsRout.js";
 import authRouter from "./router/usersRout.js";
 
@@ -22,21 +24,43 @@ app.use(morgan(config.morgan.logLevel));
 // authProc 예외는 authProc 내부에서 필터링된다.
 app.use(authProc);
 
+const {URL: url} = CONSTANT;
 /* req url: auth */
-app.use(CONSTANT.URL.AUTH, authRouter);
+app.use(url.AUTH, authRouter);
 /* req url: tweets */
-app.use(CONSTANT.URL.TWEETS, tweetsRouter);
+app.use(url.TWEETS, tweetsRouter);
+
+/* test1 */
+app.use((req, res, next) => {
+    console.log('여기를 통과하는지 확인(1)');
+    next();
+});
+
+/* test2 */
+app.use((req, res, next) => {
+    console.log('여기를 통과하는지 확인(2)');
+    next();
+});
 
 /* not found */
 app.use((req, res, next) => {
+    console.error(`해당 url 에 대한 서비스를 제공하지 않음, url = |${req.url}|`);
     res.sendStatus(404);
 });
 
 /* handle error */
+/* 에러 핸들링은 next() 에 의해서 호출되는 것이 아니다. */
 app.use((error, req, res, next) => {
-    console.error(error);
+    console.error(`서버 에러 발생 = |${error}|`);
     res.sendStatus(500);
 });
 
-/* app start */
-app.listen(config.network.port);
+/* sequelize */
+sequelize.sync()
+    .then(() => {
+        /* app start */
+        const server = app.listen(config.express.port);
+        
+        /* socket.io 사용 */
+        initSocket(server);
+    });

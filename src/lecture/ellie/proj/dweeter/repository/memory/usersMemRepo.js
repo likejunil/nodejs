@@ -1,4 +1,4 @@
-import {id} from '../util/unique.js';
+import {id} from '../../util/unique.js';
 
 /**
  * UsersRepository 는 다음 4가지 method 를 구현한다.
@@ -8,7 +8,6 @@ import {id} from '../util/unique.js';
  * . findByUsername()
  */
 
-
 /**
  * user = {
  *     "id": string(unique),
@@ -16,7 +15,7 @@ import {id} from '../util/unique.js';
  *     "password": string(use bcrypt),
  *     "name": string,
  *     "email": string,
- *     "createAt": Date,
+ *     "createdAt": Date,
  * }
  */
 const users = [];
@@ -25,7 +24,7 @@ const ID_LEN = 8;
 /**
  * 사용자 생성
  * . id, username 은 유일해야 한다. (unique)
- * . id, username, password, name, email, createAt 모두 값이 존재해야 한다. (not null)
+ * . id, username, password, name, email, createdAt 모두 값이 존재해야 한다. (not null)
  * . username 중복 여부 확인은 controller 에서 진행한다.
  */
 export async function create(user) {
@@ -36,7 +35,7 @@ export async function create(user) {
         password,
         name,
         email,
-        createAt: new Date(),
+        createdAt: new Date(),
     };
     users.push(m);
     return m;

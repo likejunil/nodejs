@@ -1,4 +1,5 @@
-import * as repository from '../repository/tweetsMemRepo.js';
+// import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
+import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
 
 /**
  * << 검색 >>
@@ -10,7 +11,7 @@ export async function getList(req, res, next) {
     const ret = await (username
         ? repository.findByUsername(username)
         : repository.findAll());
-    res.status(200).json(ret);
+    res.status(200).json(ret ?? []);
 }
 
 /**
@@ -45,7 +46,7 @@ export async function create(req, res, next) {
  * << 갱신 >>
  */
 export async function update(req, res, next) {
-    const userid = req.user.id;
+    const userId = req.user.id;
     const tweetid = req.params.id;
     
     const find = await repository.findById(tweetid);
@@ -53,8 +54,8 @@ export async function update(req, res, next) {
         console.error(`(갱신)해당 글을 찾을 수 없음, tweetid = |${tweetid}}|`);
         return res.status(404).json({message: '해당 tweet 이 존재하지 않습니다.'});
     }
-    if (find.userid !== userid) {
-        console.error(`(갱신)해당 글에 대한 권한이 없음, tweetid = |${tweetid}}|, userid = |${userid}|`);
+    if (find.userId !== userId) {
+        console.error(`(갱신)해당 글에 대한 권한이 없음, tweetid = |${tweetid}}|, userId = |${userId}|`);
         return res.status(403).json({message: '해당 tweet 을 수정할 권한이 없습니다.'});
     }
     
@@ -64,7 +65,7 @@ export async function update(req, res, next) {
     
     const ret = await repository.update(save);
     if (!ret) {
-        console.error(`(갱신)해당 글을 수정하지 못했음 , tweetid = |${tweetid}}|, userid = |${userid}|`);
+        console.error(`(갱신)해당 글을 수정하지 못했음 , tweetid = |${tweetid}}|, userId = |${userId}|`);
         return res.status(404).json({message: '글을 수정하지 못했습니다.'});
     }
     
@@ -75,12 +76,12 @@ export async function update(req, res, next) {
  * << 삭제 >>
  */
 export async function remove(req, res, next) {
-    const userid = req.user.id;
+    const userId = req.user.id;
     const tweetid = req.params.id;
     const find = await repository.findById(tweetid);
     if (find) {
-        if (find.userid !== userid) {
-            console.error(`해당 글을 삭제할 권한이 없음 , tweetid = |${tweetid}}|, userid = |${userid}|`);
+        if (find.userId !== userId) {
+            console.error(`해당 글을 삭제할 권한이 없음 , tweetid = |${tweetid}}|, userId = |${userId}|`);
             return res.status(403).json({message: '해당 tweet 을 삭제할 권한이 없습니다.'});
         }
         await repository.remove(tweetid);

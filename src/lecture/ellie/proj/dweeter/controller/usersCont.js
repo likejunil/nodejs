@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 
-import config from "../configure/config.js";
-import {createJwt} from "../middleware/auth/jwtAuth.js";
-import * as repository from '../repository/usersMemRepo.js';
+import config from '../configure/config.js';
+import {createJwt} from '../middleware/auth/jwtAuth.js';
+// import * as repository from '../repository/mysql/usersDbSqlRepo.js';
+import * as repository from '../repository/sequelize/usersSequelRepo.js';
 
 /**
  * << 회원 가입 >>

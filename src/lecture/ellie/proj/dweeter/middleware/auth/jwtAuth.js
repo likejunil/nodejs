@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import config from '../../configure/config.js';
 import CONSTANT from "../../configure/CONSTANT.js";
-import * as repository from '../../repository/usersMemRepo.js';
+import * as repository from '../../repository/mysql/usersDbSqlRepo.js';
+// import * as repository from '../../repository/memory/usersMemRepo.js';
 
 const AUTH_PASS = [
     '/auth/login',
@@ -21,9 +22,6 @@ const isPass = (path) => AUTH_PASS.includes(path);
  * jwt 를 생성한다.
  * jwt 는 payload 의 변조를 확인할 수 있지만, 내용이 공개되는 것을 막을 수는 없다.
  * 따라서 payload 내부에 보안 관련 정보나 개인 정보를 넣어서는 안된다.
- *
- * @param id
- * @returns {*}
  */
 export const createJwt = (id) => {
     return jwt.sign(
@@ -33,11 +31,6 @@ export const createJwt = (id) => {
 };
 
 /**
- *
- * @param req
- * @param res
- * @param next
- * @returns {*}
  */
 export const authProc = (req, res, next) => {
     if (isPass(req.url))
@@ -61,10 +54,10 @@ export const authProc = (req, res, next) => {
         }
         
         // 토큰의 내용을 사용하여 사용자 정보를 확인한다.
-        const userid = decoded.id;
-        const user = await repository.findById(userid);
+        const userId = decoded.id;
+        const user = await repository.findById(userId);
         if (!user) {
-            console.error(`사용자가 존재하지 않음, userid = |${userid}|`);
+            console.error(`사용자가 존재하지 않음, userId = |${userId}|`);
             return res.status(401).json({message: '인증에 실패하였습니다.'});
         }
         

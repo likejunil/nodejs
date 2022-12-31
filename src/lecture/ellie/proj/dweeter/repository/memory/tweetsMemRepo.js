@@ -1,4 +1,4 @@
-import {id} from '../util/unique.js';
+import {id} from '../../util/unique.js';
 import * as userRepository from './usersMemRepo.js';
 
 /**
@@ -14,8 +14,8 @@ import * as userRepository from './usersMemRepo.js';
  * tweet = {
  *     "id": string,
  *     "text": string,
- *     "createAt": string,
- *     "userid": string,
+ *     "createdAt": string,
+ *     "userId": string,
  * }
  */
 
@@ -25,15 +25,15 @@ const ID_LEN = 8;
 /**
  * tweet 생성
  */
-export async function create(userid, body) {
+export async function create(userId, body) {
     // 생성할 때 필요한 데이터를 추출
     const {text} = body;
     
     const tweet = {
         id: id(ID_LEN),
         text,
-        createAt: new Date(),
-        userid,
+        createdAt: new Date(),
+        userId,
     };
     
     // 기존의 것을 변경하지 않고 새롭게 생성하는 방식
@@ -58,7 +58,7 @@ export async function update(tweet) {
     tweets = tweets.map(m => (m.id === id) ? tweet : m);
     
     // 반환 데이터 조회
-    const {username, name} = await userRepository.findById(find.userid);
+    const {username, name} = await userRepository.findById(find.userId);
     
     return {...find, username, name,};
 }
@@ -78,7 +78,7 @@ export async function findAll() {
     // 반환 데이터에는 사용자의 아이디와 이름이 포함되어야 함
     return Promise.all(
         tweets.map(async m => {
-            const {username, name} = await userRepository.findById(m.userid);
+            const {username, name} = await userRepository.findById(m.userId);
             return {...m, username, name};
         })
     );
@@ -96,7 +96,7 @@ export async function findByUsername(username) {
     
     const {id, name} = find;
     return tweets
-        .filter(m => m.userid === id)
+        .filter(m => m.userId === id)
         .map(m => ({...m, username, name}));
 }
 
@@ -112,7 +112,7 @@ export async function findById(id) {
     }
     
     // 반환 데이터 조회
-    const {username, name} = await userRepository.findById(find.userid);
+    const {username, name} = await userRepository.findById(find.userId);
     
     return {...find, username, name,};
 }
