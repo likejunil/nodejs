@@ -44,13 +44,20 @@ const config = {
         port: parseInt(required('LISTEN_PORT', 8090)),
     },
     
-    db: {
+    mysql: {
         host: required('DB_HOST', '127.0.0.1'),
         port: parseInt(required('DB_PORT', 3306)),
         user: required('DB_USER', 'june1'),
         pass: required('DB_PASS', 'qweQWE123!@#'),
         database: required('DB_SCHEMA', 'dweeter'),
-    }
+    },
+    
+    mongo: {
+        host: required('MONGO_HOST', 'cluster0.xhvewxx.mongodb.net'),
+        user: required('MONGO_USER', 'june1'),
+        pass: required('MONGO_PASS'),
+        database: required('MONGO_DATABASE', 'dweeter'),
+    },
 };
 
 export default config;

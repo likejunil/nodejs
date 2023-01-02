@@ -13,6 +13,7 @@ import {initSocket} from "./middleware/socketio/socketio.js";
 import sequelize from './repository/sequelize/initSequelize.js';
 import tweetsRouter from "./router/tweetsRout.js";
 import authRouter from "./router/usersRout.js";
+import {connectMongo} from "./repository/mongo/initMongo.js";
 
 /* middle ware */
 const app = express();
@@ -57,10 +58,26 @@ app.use((error, req, res, next) => {
 
 /* sequelize */
 sequelize.sync()
-    .then(() => {
-        /* app start */
-        const server = app.listen(config.express.port);
-        
-        /* socket.io 사용 */
-        initSocket(server);
+    .then(res => console.log('sequelize 연결 성공'))
+    .catch(error => {
+        console.error(error);
+        process.exit(-1);
+    })
+
+console.log('sequelize 완료를 확인하기 전에 진행됩니다.');
+
+/* mongodb */
+connectMongo()
+    .then(res => console.log('mongodb 연결 성공'))
+    .catch(error => {
+        console.error(error);
+        process.exit(-2);
     });
+
+console.log('mongodb 연결을 확인하기 전에 진행됩니다.');
+
+/* app start */
+const server = app.listen(config.express.port);
+
+/* socket.io 사용 */
+initSocket(server);

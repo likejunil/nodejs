@@ -1,4 +1,4 @@
-import {db} from './mysqlPool.js';
+import {db} from './initMysql.js';
 
 /**
  * UsersRepository 는 다음 4가지 method 를 구현한다.

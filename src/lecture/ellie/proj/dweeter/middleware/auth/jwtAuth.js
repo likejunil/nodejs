@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import config from '../../configure/config.js';
 import CONSTANT from "../../configure/CONSTANT.js";
-import * as repository from '../../repository/mysql/usersDbSqlRepo.js';
+// import * as repository from '../../repository/mysql/usersDbSqlRepo.js';
 // import * as repository from '../../repository/memory/usersMemRepo.js';
+import * as repository from '../../repository/mongo/usersMongoRepo.js';
 
 const AUTH_PASS = [
     '/auth/login',

@@ -1,4 +1,4 @@
-import {db} from './mysqlPool.js';
+import {db} from './initMysql.js';
 
 /**
  * . create()

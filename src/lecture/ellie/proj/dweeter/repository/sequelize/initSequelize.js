@@ -1,7 +1,7 @@
 import sq from 'sequelize';
 import config from '../../configure/config.js';
 
-const {host, port, user: username, pass: password, database} = config.db;
+const {host, port, user: username, pass: password, database} = config.mysql;
 const sequelize = new sq.Sequelize({
     host,
     port,

@@ -1,5 +1,6 @@
 // import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
-import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
+// import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
+import * as repository from '../repository/mongo/tweetsMongoRepo.js';
 
 /**
  * << 검색 >>

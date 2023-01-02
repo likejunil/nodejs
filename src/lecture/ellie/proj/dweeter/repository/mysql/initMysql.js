@@ -1,7 +1,7 @@
 import mysql from 'mysql2';
 import config from '../../configure/config.js';
 
-const {db: d} = config;
+const {mysql: d} = config;
 const pool = mysql.createPool({
     host: d.host,
     port: d.port,
