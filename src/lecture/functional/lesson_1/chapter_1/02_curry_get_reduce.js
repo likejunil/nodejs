@@ -1,0 +1,69 @@
+const data = require('./data.js');
+const fp = require('./01_map_filter_each.js')
+
+/**
+ * _curry
+ * _curryr
+ * _get
+ * _reduce
+ */
+
+const _curry = (func) => {
+    return (a, b) => {
+        return b != null
+            ? func(a, b)
+            : (b) => func(a, b);
+    }
+}
+
+const add = _curry((a, b) => a + b);
+const add5 = add(5);
+console.log(add5(3));
+console.log(add(2)(4));
+console.log(add(2, 4));
+
+const _curryr = (func) => {
+    return (a, b) => {
+        return b != null
+            ? func(a, b)
+            : (b) => func(b, a);
+    }
+}
+const sub = _curryr((a, b) => a - b);
+const sub10 = sub(10);
+console.log(sub10(21));
+
+
+const _get = _curryr((obj, key) => {
+    return obj == null ? undefined : obj[key];
+});
+console.log(_get(data[2], 'name'));
+const get_name = _get('name');
+console.log(get_name(data[3]));
+console.log(get_name(data[4]));
+
+const get_age = _get('age');
+console.log(get_age(data[3]));
+console.log(get_age(data[4]));
+
+console.log(
+    fp.map(
+        fp.filter(data, (val) => val.age > 30),
+        get_name,
+    )
+);
+
+const _reduce = (list, func, init) => {
+    let total = init != null ? init : list[0];
+    const input = init != null ? list : Array.prototype.slice.call(list, 1);
+    fp.each(input, (val) => total = func(total, val), 0);
+    return total;
+}
+
+console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b, 0));
+console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b));
+
+module.exports = {
+    get: _get,
+    reduce: _reduce,
+};
