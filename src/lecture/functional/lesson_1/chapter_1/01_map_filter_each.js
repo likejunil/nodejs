@@ -117,9 +117,3 @@ const _map = (data, convert) => {
 
 console.log(_map(data, get_age));
 console.log(_map(data, get_name));
-
-module.exports = {
-    each: _each,
-    map: _map,
-    filter: _filter,
-};

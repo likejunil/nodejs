@@ -1,22 +1,25 @@
 const data = require('./data.js');
-const {filter, map, each} = require('./01_map_filter_each.js')
+const {filter, map, each} = require('./fp.js');
 
 /**
  * _curry
  * _curryr
  * _get
  * _reduce
+ * _rest
  */
 
 const _curry = (func) => {
     return (a, b) => {
-        return b != null
+        // b 인자에 null 을 전달해야 할 경우도 있으므로..
+        return b !== undefined
             ? func(a, b)
             : (b) => func(a, b);
     }
 }
 
 const add = _curry((a, b) => a + b);
+console.log(add(3, 7));
 const add5 = add(5);
 console.log(add5(3));
 console.log(add(2)(4));
@@ -24,7 +27,8 @@ console.log(add(2, 4));
 
 const _curryr = (func) => {
     return (a, b) => {
-        return b != null
+        // b 인자에 null 을 전달해야 할 경우도 있으므로..
+        return b !== undefined
             ? func(a, b)
             : (b) => func(b, a);
     }
@@ -53,17 +57,16 @@ console.log(
     )
 );
 
+const _rest = (list) => {
+    return Array.prototype.slice.call(list, 1);
+}
+
 const _reduce = (list, func, init) => {
     let total = init != null ? init : list[0];
-    const input = init != null ? list : Array.prototype.slice.call(list, 1);
+    const input = init != null ? list : _rest(list);
     each(input, (val) => total = func(total, val), 0);
     return total;
 }
 
 console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b, 0));
 console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b));
-
-module.exports = {
-    get: _get,
-    reduce: _reduce,
-};
