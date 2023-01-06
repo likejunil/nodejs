@@ -1,5 +1,5 @@
 const data = require('./data.js');
-const fp = require('./01_map_filter_each.js')
+const {filter, map, each} = require('./01_map_filter_each.js')
 
 /**
  * _curry
@@ -47,8 +47,8 @@ console.log(get_age(data[3]));
 console.log(get_age(data[4]));
 
 console.log(
-    fp.map(
-        fp.filter(data, (val) => val.age > 30),
+    map(
+        filter(data, (val) => val.age > 30),
         get_name,
     )
 );
@@ -56,7 +56,7 @@ console.log(
 const _reduce = (list, func, init) => {
     let total = init != null ? init : list[0];
     const input = init != null ? list : Array.prototype.slice.call(list, 1);
-    fp.each(input, (val) => total = func(total, val), 0);
+    each(input, (val) => total = func(total, val), 0);
     return total;
 }
 

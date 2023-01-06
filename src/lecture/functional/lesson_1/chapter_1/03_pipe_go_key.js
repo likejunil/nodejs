@@ -1,5 +1,6 @@
 const data = require('./data.js');
-const fp = require('./02_curry_get_reduce.js');
+const {filter, map, each} = require('./01_map_filter_each.js');
+const {reduce} = require('./02_curry_get_reduce.js');
 
 /**
  * _pipe
@@ -8,5 +9,13 @@ const fp = require('./02_curry_get_reduce.js');
  * _key (_each 에 적용)
  * _identity
  */
+ 
+const list = [
+    a => a + a,
+    a => a * a,
+];
 
-fp.reduce()
+const func = (arg, fn) => fn(arg);
+
+const ret = reduce(list, func, 1);
+console.log(ret);
