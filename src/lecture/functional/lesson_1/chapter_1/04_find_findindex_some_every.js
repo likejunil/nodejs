@@ -1,5 +1,5 @@
 const data = require('./data.js');
-const {go, keys, map, filter, get, identity, negate} = require('./fp.js');
+const {keys, map, filter, get, identity, negate, find, find_index, some, every} = require('./fp.js');
 
 /**
  * _values
@@ -55,6 +55,8 @@ const _find = (data, cond) => {
 };
 console.log(_find(data, m => m.name === '강백호'));
 console.log(_find(data, m => m.name === '송송송'));
+console.log(find(data, m => m.name === '강백호'));
+console.log(find(data, m => m.name === '송송송'));
 
 
 const _find_index = (data, cond) => {
@@ -68,6 +70,9 @@ const _find_index = (data, cond) => {
 console.log(_find_index(data, m => m.name === '송태섭'));
 console.log(_find_index(data, m => m.name === '조로'));
 console.log(_find_index(data, m => m.name === '권준일'));
+console.log(find_index(data, m => m.name === '송태섭'));
+console.log(find_index(data, m => m.name === '조로'));
+console.log(find_index(data, m => m.name === '권준일'));
 
 
 const _some = (data, cond) => {
@@ -80,6 +85,8 @@ const _some = (data, cond) => {
 };
 console.log(_some(data, m => m.age > 100));
 console.log(_some(data, m => m.age < 0));
+console.log(some(data, m => m.age > 100));
+console.log(some(data, m => m.age < 0));
 
 
 const _every = (data, cond) => {
@@ -87,6 +94,8 @@ const _every = (data, cond) => {
 };
 console.log(_every(data, m => m.age > 100));
 console.log(_every(data, m => m.age > 0));
+console.log(every(data, m => m.age > 100));
+console.log(every(data, m => m.age > 0));
 
 
 

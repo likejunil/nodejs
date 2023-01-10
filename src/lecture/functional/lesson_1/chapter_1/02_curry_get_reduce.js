@@ -1,5 +1,5 @@
 const data = require('./data.js');
-const {filter, map, each} = require('./fp.js');
+const {filter, map, each, reduce} = require('./fp.js');
 
 /**
  * _curry
@@ -70,3 +70,5 @@ const _reduce = (list, func, init) => {
 
 console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b, 0));
 console.log(_reduce([1, 2, 3, 4, 5], (a, b) => a + b));
+console.log(reduce([1, 2, 3, 4, 5], (a, b) => a + b, 0));
+console.log(reduce([1, 2, 3, 4, 5], (a, b) => a + b));
