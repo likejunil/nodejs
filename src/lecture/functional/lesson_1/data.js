@@ -15,3 +15,4 @@ module.exports = [
     {id: 18, group: '원피스', sex: '남자', name: '브룩', age: 190},
     {id: 19, group: '원피스', sex: '남자', name: '프랑키', age: 31},
 ]
+

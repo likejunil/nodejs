@@ -70,7 +70,7 @@ const _rest = (list) => {
  */
 const _reduce = (data, func, start) => {
     if (data.length === 0)
-        return null;
+        return start ?? data;
     let ret = start != null ? start : data[0];
     const list = start != null ? data : _rest(data);
     _each(list, m => (ret = func(ret, m)));
@@ -202,7 +202,7 @@ const _max_by = _curryr((data, func) => {
 });
 
 const _group_by = _curryr((data, func) => {
-    return reduce(data, (ret, m) => {
+    return _reduce(data, (ret, m) => {
         const key = func(m);
         ret[key] = ret[key] || [];
         ret[key].push(m);
@@ -211,10 +211,18 @@ const _group_by = _curryr((data, func) => {
 });
 
 const _count_by = _curryr((data, func) => {
-    return reduce(data, (ret, m) => {
+    return _reduce(data, (ret, m) => {
         const key = func(m);
         ret[key] = ret[key] || 0;
         ret[key] += 1;
+        return ret;
+    }, {});
+});
+
+const _index_by = _curryr((data, func) => {
+    return _reduce(data, (ret, m) => {
+        const key = func(m);
+        ret[key] = m;
         return ret;
     }, {});
 });
@@ -249,4 +257,5 @@ module.exports = {
     max_by: _max_by,
     group_by: _group_by,
     count_by: _count_by,
+    index_by: _index_by,
 }
