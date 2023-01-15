@@ -1,4 +1,4 @@
-const data = require('./data.js');
+const data = require('../data/data.js');
 const {keys, map, filter, get, identity, negate, find, find_index, some, every} = require('./fp.js');
 
 /**

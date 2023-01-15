@@ -1,15 +1,13 @@
 const _ = require('fxjs/Strict');
 const L = require('fxjs/Lazy');
 const C = require('fxjs/Concurrency');
-const {users, posts, comments} = require('./data2.js');
+const {users, posts, comments} = require('../data/data2.js');
 const {identity, get, map, go, filter, pluck, pipe, find, count_by, group_by, index_by} = require('./fp.js');
 
 /**
  * _.index_by
  * _.group_by
- * _.flatten
  * _.pluck
- * _.deep_pluck
  * _.uniq
  * _.count_by
  */

@@ -1,4 +1,4 @@
-const data = require('./data.js');
+const data = require('../data/data.js');
 const {reduce, filter, map, get} = require('./fp.js');
 
 /**
