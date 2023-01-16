@@ -86,6 +86,10 @@ const __take = __curry((n, iter) => {
     return ret;
 });
 
+/**
+ */
+const __take_all = __take(Infinity);
+
 const Strict = {
     curry: __curry,
     map: __map,
@@ -96,6 +100,7 @@ const Strict = {
     sum: __sum,
     range: __range,
     take: __take,
+    take_all: __take_all,
 };
 
 /**
@@ -145,6 +150,7 @@ const Lazy = {
     map: L_map,
     filter: L_filter,
     reduce: L_reduce,
+    
 };
 
 module.exports = {

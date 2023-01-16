@@ -12,5 +12,24 @@
  * L.deep_flatten
  *
  * L.flat_map
- * 
+ *
  */
+
+const {_, L} = require('./fp.js');
+
+const obj = {
+    animal: 'cat',
+    color: 'yellow',
+    age: 48,
+};
+
+_.go(
+    obj,
+    Object.entries,
+    L.map(([k, v]) => `${k}=${v}`),
+    _.take_all,
+    _.reduce((ret, m) => `${ret}&${m}`),
+    console.log,
+);
+
+// ==> animal=cat&color=yellow&
