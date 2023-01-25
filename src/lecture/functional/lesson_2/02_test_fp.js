@@ -1,4 +1,4 @@
-const {_} = require('./fp.js');
+const {_} = require('../lib/fp.js');
 const iter = require('../data/data.js');
 
 const f0 = () => {

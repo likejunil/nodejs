@@ -1,5 +1,5 @@
 const iter = require('../data/data.js');
-const {_, L} = require('./fp.js');
+const {_, L} = require('../lib/fp.js');
 
 const f1 = (n) => {
     _.go(
