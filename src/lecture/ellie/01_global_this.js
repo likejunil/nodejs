@@ -25,36 +25,91 @@
  * 하지만 일반 함수의 내부에서 this 는 global 이다.
  * strict mode 에서 일반 함수 내부의 this 는 undefined 이다.
  * 화살표 함수는 자신이 선언되는 곳에서의 this 를 물려 받는다.
- *
- * 3.
- * 일반 함수는 도대체 어떤 객체의 속성일까?
- * __dirname 과 같은 속성은 어떤 객체의 속성일까?
  */
+const log = console.log;
 
 // global 객체에 임의로 속성을 할당할 수 있다.
 // global 객체는 어디서나 접근이 가능하고, global 이름을 생략할 수 있다.
-console.log('************************************************');
-console.log(' << 전역 >>');
-console.log('************************************************');
-global.hello = () => '안녕하세요~!';
-console.log('global.hello() :', global.hello());
-console.log('hello() :', hello());
+log('************************************************');
+log(' << this: 누가 나를 실행시켰는가? >>');
+log('************************************************');
 
+//1.
+log('모듈 전역에서 this === module.exports :', this === module.exports);
+log('=> 1. 일반적으로 nodejs 에서 this 는 module.exports 이다.')
+log();
+
+//2.
+(function () {
+    log('일반 함수 내에서(no strict) this === global :', this === global);
+})();
+
+(function () {
+    'use strict';
+    log('일반 함수 내에서(strict) this === undefined :', this === undefined);
+})();
+log('=> 2. 일반 함수내에서 this 는 global 이다. strict mode 인 경우에는 undefined 가 된다.');
+log();
+
+// 3.
+global.hi = function () {
+    log('글로벌 속성의 일반 함수 내에서(no strict) this === global :', this === global);
+}
+global.hi();
+
+global.hi_strict = function () {
+    'use strict';
+    log('글로벌 속성의 일반 함수 내에서(strict) this === global :', this === global);
+}
+global.hi_strict();
+log('=> 3. global 객체의 속성인 함수는 항상 global 을 this 로 갖는다.');
+log();
+
+// 4.
+const bye = () => {
+    log('전역 화살표 함수 내에서 this === module.exports :', this === module.exports);
+};
+bye();
+
+global.hello = () => {
+    log('글로벌 속성의 화살표 함수 내에서 this === module.exports :', this === module.exports);
+}
+hello();
+
+(function () {
+    const _this = this;
+    log('일반 함수의 _this(this) === global :', _this === global);
+    const f = () => {
+        log('일반 함수 내부에서의 화살표 함수에서 this === _this:', this === _this);
+    };
+    f();
+})();
+log('=> 4. 화살표 함수는 this 를 갖고 있지 않다. 따라서 scope 를 따라가며 this 를 찾는다.');
+log();
+
+
+log('************************************************');
+log(' << var 는 사용하지 않는다. >>');
+log('************************************************');
+log('>> 1. 암묵적 선언이 허용된다.')
+log('>> 2. 모듈 내의 전역에서 선언한 var 변수는 global 객체의 속성이 된다.');
+log('>> 3. 중복 선언을 허용한다. 의도치 않게 이전의 값을 덮어쓸 수 있다.');
 
 // 모듈 내의 전역에서 선언한 var 변수는 global 객체의 속성이 된다.
 // 변수명만 사용할 경우 암묵적으로 var 가 사용된다.
 animal = 'cat';
-console.log('var animal :', animal);
-console.log('global.animal :', global.animal);
+log('animal :', animal);
+log('animal === global.animal :', animal === global.animal);
+log();
 
 // const, let 의 경우는 global 객체의 속성이 되지 않는다.
 const color = 'black';
 let planet = 'earth';
-console.log('const color :', color);
-console.log('global.color :', global.color);
-console.log('let planet :', planet);
-console.log('global.planet :', global.planet);
-console.log();
+log('const color :', color);
+log('global.color !== color :', global.color !== color);
+log('let planet :', planet);
+log('global.planet !== planet :', global.planet !== planet);
+log();
 
 // 브라우저 환경에서 전역에서의 일반 함수는 window 객체의 속성이 된다.
 // 하지만 nodejs 에서 전역의 일반 함수는 global 의 속성이 되지 않는다.
@@ -66,41 +121,3 @@ console.log();
 // 화살표 함수는 항상 자신이 선언되는 위치에서의 this 를 따른다.
 // 일반 함수의 this 는 동적으로 결정되지만,
 // 화살표 함수의 this 는 선언할 때 정적으로 결정된다.
-(function out1() {
-    console.log('전역에서 일반 함수는 global 의 속성이 아니다. :', global.out1 === undefined);
-    
-    function in1() {
-        console.log('중첩 함수는 global 의 속성은 아니다. :', global.in1 === undefined);
-    }
-    
-    in1();
-})();
-console.log();
-
-// built-in 객체들도 모두 global 객체의 속성이다.
-// console 과 각종 타이머 함수들도 global 객체의 속성이다.
-console.log('global.Object === Object :', global.Object === Object);
-console.log('global.Boolean === Boolean :', global.Boolean === Boolean);
-console.log('global.Number === Number :', global.Number === Number);
-console.log('global.String === String :', global.String === String);
-console.log('global.Symbol === Symbol :', global.Symbol === Symbol);
-console.log('global.setTimeout === setTimeout :', global.setTimeout === setTimeout);
-console.log('global.setImmediate === setImmediate :', global.setImmediate === setImmediate);
-console.log('global.setInterval === setInterval :', global.setInterval === setInterval);
-
-/**
- * global 객체의 속성이 아닌 것들도 존재한다.
- * 이러한 객체들은 어디에 존재하는 걸까?
- */
-/*
-console.log('************************************************');
-console.log(' << GLOBAL >>');
-console.log('************************************************');
-console.log(Object.getOwnPropertyDescriptors(global));
-console.log();
-console.log('************************************************');
-console.log(' << MODULE >>');
-console.log('************************************************');
-console.log(Object.getOwnPropertyDescriptors(module));
-console.log();
- */

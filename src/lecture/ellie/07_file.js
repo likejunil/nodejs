@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const log = console.log;
+const encoding = 'utf8';
 
 /**
  * 파일에 대한 작업을 할 때 fs 모듈을 사용한다.
@@ -9,15 +11,14 @@ const path = require('path');
 const dataDir = 'data';
 // const file = 'en.txt';
 const file = 'ko.txt';
-console.log(`현재 디렉토리=[${__dirname}]`);
-const inFile = path.join(__dirname, dataDir, file);
-console.log(`데이터 파일=[${inFile}]`)
-const stats = fs.statSync(inFile);
-console.log(`파일 사이즈=[${stats.size}]`);
+log(`현재 디렉토리=[${__dirname}]`);
+const targetFile = path.join(__dirname, dataDir, file);
+log(`데이터 파일=[${targetFile}]`)
+const stats = fs.statSync(targetFile);
+log(`파일 사이즈=[${stats.size}]`);
 console.table(stats);
-console.log();
+log();
 
-const encoding = 'utf8';
 
 // 1.
 // callback 함수를 인자어 주어 non-blocking 으로 진행한다.
@@ -26,17 +27,18 @@ const encoding = 'utf8';
 // 그렇지 않으면 Buffer 타입이 된다.
 // callback 은 call stack 이 비워져야 마침내 실행될 수 있다.
 const func1 = () => {
-    fs.readFile(inFile, encoding, (error, data) => {
+    fs.readFile(targetFile, encoding, (error, data) => {
         if (error) {
             console.error(error.message);
             return;
         }
+        
         const bytes = Buffer.from(data);
-        console.log(`1. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
+        log(`1. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
             `바이트길이=[${bytes.length}], 바이트내용=[10:${bytes.toString(encoding, 0, 10)}]`);
     });
     
-    console.log('1. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
+    log('1. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
 };
 
 // 2.
@@ -46,31 +48,32 @@ const func1 = () => {
 // javascript 는 one-thread 방식이기 때문에 결코 이런 방식을 사용해서는 안된다.
 const func2 = () => {
     try {
-        const data = fs.readFileSync(inFile, {encoding, flag: 'r'});
+        const data = fs.readFileSync(targetFile, {encoding, flag: 'r'});
         const bytes = Buffer.from(data);
-        console.log(`2. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
+        log(`2. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
             `바이트길이=[${bytes.length}], 바이트내용=[10:${bytes.toString(encoding, 0, 10)}]`);
     } catch (error) {
         console.error(error.message);
     }
     
-    console.log('2. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
+    log('2. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
 };
 
 // 3.
 // promises 를 사용한다.
 const func3 = () => {
-    fs.promises.readFile(inFile, encoding)
+    fs.promises
+        .readFile(targetFile, encoding)
         .then(data => {
             const bytes = Buffer.from(data);
-            console.log(`3. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
+            log(`3. 문자길이=[${data.length}], 문자내용=[10:${data.substring(0, 10)}], ` +
                 `바이트길이=[${bytes.length}], 바이트내용=[10:${bytes.toString(encoding, 0, 10)}]`);
         })
         .catch(error => {
             console.error(error.message);
         });
     
-    console.log('3. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
+    log('3. 내보다 먼저 파일을 읽을 수는 없을 것이야..');
 }
 
 func1();

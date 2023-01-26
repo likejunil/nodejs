@@ -9,6 +9,8 @@
  * exports 에 다른 객체를 할당하면 module.exports !== exports 가 된다.
  */
 
+const INIT_COUNT = 0;
+
 let count = 0;
 
 function increment() {
@@ -26,16 +28,18 @@ class Person {
     }
     
     get info() {
-        return `이름은 ${this.name}, 나이는 ${this.age}입니다.`;
+        return `이름: ${this.name} 나이: ${this.age}`;
     }
     
-    set info(age) {
+    set info(info) {
+        const [name, age] = info;
+        this.name = name;
         this.age = age;
     }
 }
 
 module.exports = {
-    count,      // 변수
+    INIT_COUNT, // 변수
     increment,  // 함수
     getCount,   // 함수
     Person,     // 클래스(객체)

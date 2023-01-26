@@ -1,4 +1,5 @@
-const {increment, getCount, Person, count} = require('./03_1_counter.js');
+const {increment, getCount, Person, INIT_COUNT: init} = require('./03_1_module_access-property.js');
+const log = console.log;
 
 /**
  * require(경로|모듈이름) 의 반환값은 객체다.
@@ -8,12 +9,14 @@ const {increment, getCount, Person, count} = require('./03_1_counter.js');
  * 특정 모듈을 가져오면(require..) 해당 모듈이 실행된다.
  */
 
-console.log(count);
+log('count 초기값 :', init);
+log('count 를 2번 증가 실행');
 increment();
 increment();
-console.log(getCount());
+log('증가한 count 값 :', getCount());
+log();
 
 const person = new Person('효진', 43);
-console.log(person.info);
-person.info = 44;
-console.log(person.info);
+log(person.info);
+person.info = ['준일', 48];
+log(person.info);

@@ -17,8 +17,3 @@ const log = console.log;
  * 4. time
  */
 
-const f = function () {
-    return 1;
-}
-
-Promise.reject('no').catch(e => log("1", e)).catch(e => log("2", e));
