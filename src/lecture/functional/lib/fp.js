@@ -1,9 +1,6 @@
-const LOG = true;
-const log = (...m) => LOG && console.log(...m);
-
 /**
  */
-const __noop = (...args) => {
+const __noop = () => {
 };
 
 /**
@@ -25,67 +22,37 @@ const __go1 = (a, f) => a instanceof Promise
 
 /**
  */
-const __curry = f => (a, ...args) => {
-    if (args.length === 0) {
-        log('[curry] 한 개의 인자만 입력하여 저장하고 클로저 반환', a);
-        return (...args) => f(a, ...args);
-    } else {
-        log('[curry] 모든 인자를 입력하여 곧바로 실행', a);
-        return f(a, ...args);
-    }
-}
+const __curry = f => (a, ...args) => args.length === 0
+    ? (...args) => f(a, ...args)
+    : f(a, ...args);
 
 /**
  */
 const __take = __curry((n, iter) => {
     let ret = [];
-    log("[take] before 이터레이터 생성");
     iter = iter[Symbol.iterator]();
-    log("[take] after 이터레이터 생성");
     
     const recur = () => {
         while (true) {
-            log("[take] before 이터레이터에서 next() 호출");
             const item = iter.next();
-            log("[take] after 이터레이터에서 next() 호출", item.value);
             if (item.done) break;
             
             const val = item.value;
             if (val instanceof Promise) {
-                /**
-                 * 바로 여기서 최종 Promise 가 반환된다.
-                 * __take 함수가 return 을 하면서 call stack 의 모든 함수가 종료된다.
-                 *
-                 * Promise 가 pending 에서 벗어나면..
-                 * event loop 에 의해서..
-                 * micro task queue 에 대기하던 Promise 가..
-                 * call stack 으로 옮겨진다.
-                 */
-                log('[take] Promise 반환 직전');
                 return val
                     .then(m => {
-                        log("[take] 프라미스 실행", m);
                         ret.push(m);
-                        if (ret.length >= n) {
-                            log("[take] 종료");
-                            return ret;
-                        }
-                        log("[take] 다음 항목으로 진행");
+                        if (ret.length >= n) return ret;
                         return recur();
                     })
                     .catch(e => {
-                        if (e === __nop) {
-                            log("[take] nop 다음 항목으로 진행");
-                            return recur();
-                        }
-                        log("[take] 진짜 에러 발생", e);
+                        if (e === __nop) return recur();
                         return Promise.reject(e)
                     });
             } else {
                 ret.push(val);
-                if (ret.length >= n) {
+                if (ret.length >= n)
                     return ret;
-                }
             }
         }
         return ret;
@@ -102,22 +69,17 @@ const __take_all = __take(Infinity);
  */
 const L_range = function* (l) {
     let i = 0;
-    while (i < l) {
+    while (i < l)
         yield i++;
-    }
 };
 
 /**
  */
 const L_map = __curry(function* (f, iter) {
-    log("[map] before 이터레이터 생성");
     iter = iter[Symbol.iterator]();
-    log("[map] after 이터레이터 생성");
     
     while (true) {
-        log("[map] before 이터레이터에서 next() 호출");
         const item = iter.next();
-        log("[map] after 이터레이터에서 next() 호출", item.value);
         if (item.done) break;
         
         const m = item.value;
@@ -128,23 +90,16 @@ const L_map = __curry(function* (f, iter) {
 /**
  */
 const L_filter = __curry(function* (f, iter) {
-    log("[filter] before 이터레이터 생성");
     iter = iter[Symbol.iterator]();
-    log("[filter] after 이터레이터 생성");
     
     while (true) {
-        log("[filter] before 이터레이터에서 next() 호출");
         const item = iter.next();
-        log("[filter] after 이터레이터에서 next() 호출", item.value);
         if (item.done) break;
         
         const m = item.value;
         const b = __go1(m, f);
         if (b instanceof Promise) {
-            yield b.then(b1 => {
-                log("[filter] 프라미스 실행", m);
-                return b1 ? m : Promise.reject(__nop);
-            });
+            yield b.then(b1 => b1 ? m : Promise.reject(__nop));
         } else {
             if (b) yield m;
         }
@@ -154,9 +109,22 @@ const L_filter = __curry(function* (f, iter) {
 /**
  */
 const L_entries = function* (obj) {
-    for (const m in obj) {
-        yield [m, obj[m]];
-    }
+    for (const k in obj)
+        yield [k, obj[k]];
+};
+
+/**
+ */
+const L_keys = function* (obj) {
+    for (const k in obj)
+        yield k;
+};
+
+/**
+ */
+const L_values = function* (obj) {
+    for (const m of obj)
+        yield m;
 };
 
 /**
@@ -167,11 +135,8 @@ const __is_iterable = m => m && m[Symbol.iterator];
  */
 const L_deep_flatten = function* (iter) {
     for (const m of iter) {
-        if (__is_iterable(m)) {
-            yield* L_deep_flatten(m);
-        } else {
-            yield m;
-        }
+        if (__is_iterable(m)) yield* L_deep_flatten(m);
+        else yield m;
     }
 }
 
@@ -215,25 +180,9 @@ const __reduce = __curry((f, init, iter) => {
     
     const inner = (ret, val, f) => {
         if (val instanceof Promise) {
-            /**
-             * 바로 여기서 최종 Promise 가 반환된다.
-             * __reduce 함수가 return 을 하면서 call stack 의 모든 함수가 종료된다.
-             *
-             * Promise 가 pending 에서 벗어나면..
-             * event loop 에 의해서..
-             * micro task queue 에 대기하던 Promise 가..
-             * call stack 으로 옮겨진다.
-             */
-            log('[reduce] Promise 반환 직전');
             return val
-                .then(m1 => {
-                    log('[reduce] m1:', m1);
-                    return f(ret, m1);
-                })
-                .catch(e => {
-                    log('[reduce] e:', e);
-                    return (e === __nop) ? ret : Promise.reject(e);
-                });
+                .then(m => f(ret, m))
+                .catch(e => (e === __nop) ? ret : Promise.reject(e));
         } else {
             return f(ret, val);
         }
@@ -246,9 +195,8 @@ const __reduce = __curry((f, init, iter) => {
             if (item.done) break;
             
             ret = inner(ret, item.value, f);
-            if (ret instanceof Promise) {
+            if (ret instanceof Promise)
                 return ret.then(recur);
-            }
         }
         return ret;
     };
@@ -337,6 +285,8 @@ const Lazy = {
     map: L_map,
     filter: L_filter,
     entries: L_entries,
+    keys: L_keys,
+    values: L_values,
     deep_flatten: L_deep_flatten,
     flat_map: L_flat_map,
 };
