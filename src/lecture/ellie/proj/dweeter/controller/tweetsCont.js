@@ -1,17 +1,18 @@
-// import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
+import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
 // import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
-import * as repository from '../repository/mongo/tweetsMongoRepo.js';
+// import * as repository from '../repository/mongo/tweetsMongoRepo.js';
 
 /**
  * << 검색 >>
  * 1. query 인자로 username 정보가 존재하는지 확인
  * 2. 조건에 따라 특정 username 의 tweet 검색 혹은 전체 검색
  */
-export async function getList(req, res, next) {
-    const username = req.query.username;
+export const getList = async (req, res, next) => {
+    const {username} = req.query;
     const ret = await (username
         ? repository.findByUsername(username)
         : repository.findAll());
+    
     res.status(200).json(ret ?? []);
 }
 
@@ -19,8 +20,8 @@ export async function getList(req, res, next) {
  * << 검색 >>
  * 1. 특정 tweet 을 검색
  */
-export async function getById(req, res, next) {
-    const id = req.params.id;
+export const getById = async (req, res, next) => {
+    const {id} = req.params;
     const ret = await repository.findById(id);
     if (!ret) {
         console.error(`(검색)해당 글을 찾을 수 없음, id = |${id}}|`);
@@ -33,8 +34,8 @@ export async function getById(req, res, next) {
 /**
  * << 생성 >>
  */
-export async function create(req, res, next) {
-    const id = req.user.id;
+export const create = async (req, res, next) => {
+    const {id} = req.user;
     
     // 생성 내용
     const body = req.body;
@@ -46,9 +47,9 @@ export async function create(req, res, next) {
 /**
  * << 갱신 >>
  */
-export async function update(req, res, next) {
-    const userId = req.user.id;
-    const tweetid = req.params.id;
+export const update = async (req, res, next) => {
+    const {id: userId} = req.user;
+    const {id: tweetid} = req.params;
     
     const find = await repository.findById(tweetid);
     if (!find) {
@@ -76,9 +77,9 @@ export async function update(req, res, next) {
 /**
  * << 삭제 >>
  */
-export async function remove(req, res, next) {
-    const userId = req.user.id;
-    const tweetid = req.params.id;
+export const remove = async (req, res, next) => {
+    const {id: userId} = req.user;
+    const {id: tweetid} = req.params;
     const find = await repository.findById(tweetid);
     if (find) {
         if (find.userId !== userId) {

@@ -1,5 +1,4 @@
 import {db} from './initMysql.js';
-import * as userRepository from './usersDbSqlRepo.js';
 
 /**
  * . create()
@@ -12,13 +11,6 @@ import * as userRepository from './usersDbSqlRepo.js';
 
 export const create = async (userId, body) => {
     const {text} = body;
-    const user = await userRepository.findById(userId);
-    console.log('데이터베이스에 조회하여 결과가 없을 때: ', user);
-    if (user == null) {
-        console.error(`해당 유저가 존재하지 않음, userId = |${userId}|`);
-        return null;
-    }
-    
     return db
         .execute('INSERT INTO tweets (text, userId) VALUES (?,?)', [text, userId])
         .then(res => findById(res[0].insertId));
