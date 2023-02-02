@@ -1,5 +1,5 @@
-import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
-// import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
+// import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
+import * as repository from '../repository/sequelize/tweetsSequelRepo.js';
 // import * as repository from '../repository/mongo/tweetsMongoRepo.js';
 
 /**
@@ -7,7 +7,7 @@ import * as repository from '../repository/mysql/tweetsDbSqlRepo.js';
  * 1. query 인자로 username 정보가 존재하는지 확인
  * 2. 조건에 따라 특정 username 의 tweet 검색 혹은 전체 검색
  */
-export const getList = async (req, res, next) => {
+export const getList = async (req, res) => {
     const {username} = req.query;
     const ret = await (username
         ? repository.findByUsername(username)
@@ -20,7 +20,7 @@ export const getList = async (req, res, next) => {
  * << 검색 >>
  * 1. 특정 tweet 을 검색
  */
-export const getById = async (req, res, next) => {
+export const getById = async (req, res) => {
     const {id} = req.params;
     const ret = await repository.findById(id);
     if (!ret) {
@@ -34,7 +34,7 @@ export const getById = async (req, res, next) => {
 /**
  * << 생성 >>
  */
-export const create = async (req, res, next) => {
+export const create = async (req, res) => {
     const {id} = req.user;
     
     // 생성 내용
@@ -47,7 +47,7 @@ export const create = async (req, res, next) => {
 /**
  * << 갱신 >>
  */
-export const update = async (req, res, next) => {
+export const update = async (req, res) => {
     const {id: userId} = req.user;
     const {id: tweetid} = req.params;
     
@@ -77,7 +77,7 @@ export const update = async (req, res, next) => {
 /**
  * << 삭제 >>
  */
-export const remove = async (req, res, next) => {
+export const remove = async (req, res) => {
     const {id: userId} = req.user;
     const {id: tweetid} = req.params;
     const find = await repository.findById(tweetid);

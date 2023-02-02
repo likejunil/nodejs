@@ -9,16 +9,18 @@ const router = express.Router();
 
 /**
  * GET /tweets
- * GET /tweets/username
- * GET /tweets/:id
  * POST /tweets
+ * GET /tweets/:id
  * PUT /tweets/:id
  * DELETE /tweets/:id
  */
-router.get("/", controller.getList);
-router.get("/:id", controller.getById);
-router.post("/", validator("post", "/"), controller.create);
-router.put("/:id", validator("put", "/:id"), controller.update);
-router.delete("/:id", controller.remove);
+router.route("/")
+    .get(controller.getList)
+    .post(validator("post", "/"), controller.create);
+
+router.route("/:id")
+    .get(controller.getById)
+    .put(validator("put", "/:id"), controller.update)
+    .delete(controller.remove);
 
 export default router;

@@ -2,8 +2,8 @@ import bcrypt from 'bcrypt';
 
 import config from '../configure/config.js';
 import {createJwt} from '../middleware/auth/jwtAuth.js';
-import * as repository from '../repository/mysql/usersDbSqlRepo.js';
-// import * as repository from '../repository/sequelize/usersSequelRepo.js';
+// import * as repository from '../repository/mysql/usersDbSqlRepo.js';
+import * as repository from '../repository/sequelize/usersSequelRepo.js';
 // import * as repository from '../repository/mongo/usersMongoRepo.js';
 
 /**
@@ -12,7 +12,7 @@ import * as repository from '../repository/mysql/usersDbSqlRepo.js';
  * 2. 사용 가능한 username 의 경우, 계정과 jwt token 생성
  * 3. 계정의 패스워드 정보를 제외하고, 계정 정보와 jwt token 반환
  */
-export const signup = async (req, res, next) => {
+export const signup = async (req, res) => {
     // 1.해당 username 의 사용자가 이미 존재하는지 검증
     const {username, password: plain, name, email} = req.body;
     const find = await repository.findByUsername(username);
@@ -40,7 +40,7 @@ export const signup = async (req, res, next) => {
  * 2. 해당 username 계정이 존재하는 경우, 패스워드 검증
  * 3. 패스워드 검증을 통과하면 jwt token 을 생성하여 반환
  */
-export const login = async (req, res, next) => {
+export const login = async (req, res) => {
     // 1.해당 username 의 사용자가 존재하는지 검증
     const {username, password} = req.body;
     const find = await repository.findByUsername(username);
@@ -64,7 +64,7 @@ export const login = async (req, res, next) => {
 /**
  * << 모든 회원 목록 >>
  */
-export const getAll = async (req, res, next) => {
+export const getAll = async (req, res) => {
     const users = await repository.findAll();
     res.status(200).json(users);
 };

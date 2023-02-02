@@ -84,11 +84,9 @@ export default (sequelize) => {
         },
     );
     
-    /*
     User.associate = (models) => {
         User.hasMany(models.Tweet, {foreignKey: 'user_id', sourceKey: 'id'});
     };
-     */
     
     return User;
 }

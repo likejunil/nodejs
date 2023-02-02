@@ -90,7 +90,7 @@ const config = {
             // collate: 'utf8mb4_general_ci',
             timestamps: true,
         },
-        logging: false,
+        // logging: false,
     },
     
     mongo: {

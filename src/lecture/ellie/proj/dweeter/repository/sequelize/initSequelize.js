@@ -11,7 +11,7 @@ const User = user(sequelize);
 
 /* Tweet 모델 생성 */
 const Tweet = tweet(sequelize);
-Tweet.belongsTo(User);
+/* Tweet.belongsTo(User); */
 
 const Model = {
     User,

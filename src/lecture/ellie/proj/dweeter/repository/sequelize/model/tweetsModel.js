@@ -37,11 +37,9 @@ export default (sequelize) => {
         },
     );
     
-    /*
     Tweet.associate = (models) => {
-        Tweet.belongsTo(models.User, {foreignKey: 'user_id', sourceKey: 'id'});
+        Tweet.belongsTo(models.User, {foreignKey: 'user_id', targetKey: 'id'});
     };
-     */
     
     return Tweet;
 };
