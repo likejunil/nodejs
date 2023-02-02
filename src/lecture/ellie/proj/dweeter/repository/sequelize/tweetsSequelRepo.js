@@ -1,7 +1,6 @@
 // https://any-ting.tistory.com/51
-import Tweet from './entity/tweetsEntity.js';
-import User from './entity/usersEntity.js';
 import {Sequelize} from "sequelize";
+import {Model} from './initSequelize.js';
 
 /**
  * . create()
@@ -12,10 +11,11 @@ import {Sequelize} from "sequelize";
  * . findByUsername()
  */
 
+const {User, Tweet} = Model;
+
 export const create = async (userId, body) => {
     const {text} = body;
     const save = {text, userId};
-    console.log(save);
     return Tweet
         .create(save)
         .then(res => findById(res.dataValues.id));

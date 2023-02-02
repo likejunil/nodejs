@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-import multer from 'multer';
-import path from 'path';
 
 dotenv.config();
 
@@ -49,7 +47,7 @@ const config = {
     },
     
     cookie: {
-        sign: required('COOKIE_SIGN', "earth-cat-blue-orange"),
+        sign: required('COOKIE_SIGN'),
     },
     
     session: {
@@ -58,7 +56,7 @@ const config = {
             resave: false,
             /* 세션에 저장할 내용이 없더라도 처음부터 세션을 설정할지.. */
             saveUninitialized: false,
-            secret: required('SESSION_SECRET', "mars-tiger-black-banana"),
+            secret: required('SESSION_SECRET'),
             name: 'session.id',
             cookie: {
                 httpOnly: true,
@@ -67,50 +65,41 @@ const config = {
     },
     
     multer: {
-        /* 디스크 또는 메모리.. */
-        storage: multer.diskStorage({
-            destination(req, file, done) {
-                done(null, 'upload/')
-            },
-            
-            /**
-             * file = {
-             *     "fieldname": "file", // html form 에 정의된 필드 이름
-             *     "originalname": "jortu.png", // 사용자가 업로드 한 파일 이름
-             *     "encoding": "7bit",
-             *     "mimetype": "image/png",
-             *     "destination": "upload/",
-             *     "filename": "jortu1641367168859.png",
-             *     "path": "upload/jortu1641367168859.png",
-             *     "size": 381172 // byte 단위
-             * }
-             */
-            filename(req, file, done) {
-                /* 확장자는 "." 을 포함한다. */
-                const ext = path.extname(file.originalname);
-                /* 확장자를 제외한 파일 이름 + 밀리초(from 1970.01.01) + 확장자 */
-                done(null, path.basename(file.originalname, ext) + Date.now() + ext);
-            }
-        }),
-        limits: {
-            fileSize: 5 * 1024 * 1024,
-        },
+        fileSize: 1024 * 1024 * 5,
+        uploadPath: 'uploads/',
     },
     
     mysql: {
         host: required('DB_HOST', '127.0.0.1'),
         port: parseInt(required('DB_PORT', 3306)),
-        user: required('DB_USER', 'june1'),
-        pass: required('DB_PASS', 'qweQWE123!@#'),
-        database: required('DB_SCHEMA', 'dweeter'),
+        user: required('DB_USER'),
+        pass: required('DB_PASS'),
+        database: required('DB_SCHEMA'),
+    },
+    
+    sequelize: {
+        host: required('DB_HOST', '127.0.0.1'),
+        port: parseInt(required('DB_PORT', 3306)),
+        username: required('DB_USER'),
+        password: required('DB_PASS'),
+        database: required('DB_SCHEMA'),
+        dialect: "mysql",
+        define: {
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci',
+            // collate: 'utf8mb4_general_ci',
+            timestamps: true,
+        },
+        logging: false,
     },
     
     mongo: {
-        host: required('MONGO_HOST', 'cluster0.xhvewxx.mongodb.net'),
+        // host: required('MONGO_HOST', 'cluster0.xhvewxx.mongodb.net'),
+        host: required('MONGO_HOST', '127.0.0.1'),
         port: parseInt(required('MONGO_PORT', 27017)),
-        user: required('MONGO_USER', 'june1'),
+        user: required('MONGO_USER'),
         pass: required('MONGO_PASS'),
-        database: required('MONGO_DATABASE', 'dweeter'),
+        database: required('MONGO_DATABASE'),
     },
 };
 

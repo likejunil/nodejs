@@ -1,4 +1,4 @@
-import User from './entity/usersEntity.js';
+import {Model} from "./initSequelize.js";
 
 /**
  * UsersRepository 는 다음 4가지 method 를 구현한다.
@@ -8,8 +8,8 @@ import User from './entity/usersEntity.js';
  * . findByUsername()
  */
 
-/**
- */
+const {User} = Model;
+
 export const create = async (user) => {
     return User
         .create(user)
@@ -19,20 +19,14 @@ export const create = async (user) => {
         });
 };
 
-/**
- */
 export const findById = async (id) => {
     return User.findByPk(id)
 };
 
-/**
- */
 export const findByUsername = async (username) => {
     return User.findOne({where: {username}});
 };
 
-/**
- */
 export const findAll = async () => {
     return User.findAll();
 };

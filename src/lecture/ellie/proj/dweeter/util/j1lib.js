@@ -1,28 +1,27 @@
-const strdate = (format) => {
-    const date = new Date();
+const strftime = (format, date) => {
+    if (!date) date = new Date();
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const day = ('0' + date.getMonth()).slice(-2);
     const dateStr = `${year}-${month}-${day}`;
     
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+    const seconds = ('0' + date.getSeconds()).slice(-2);
+    const milli = date.getMilliseconds();
     const timeStr = `${hours}:${minutes}:${seconds}`;
     
     return format
         ? format
-            .replace('%Y', year)
-            .replace('%m', month)
-            .replace('%d', day)
-            .replace('%H', hours)
-            .replace('%M', minutes)
-            .replace('%S', seconds)
+            .replaceAll('%Y', year)
+            .replaceAll('%ms', milli)
+            .replaceAll('%m', month)
+            .replaceAll('%d', day)
+            .replaceAll('%H', hours)
+            .replaceAll('%M', minutes)
+            .replaceAll('%S', seconds)
         : `${dateStr} ${timeStr}`;
 };
-
-const format = '%Y-%m-%d %H:%M:%S';
-console.log(strdate(format));
 
 const fill = (target, digit, fill = '0', dir = 'start') => {
     const type = typeof (target);
@@ -45,7 +44,9 @@ const fill = (target, digit, fill = '0', dir = 'start') => {
     }
 };
 
-
-module.exports = {
+const j1 = {
     fill,
+    strftime,
 };
+
+export default j1;

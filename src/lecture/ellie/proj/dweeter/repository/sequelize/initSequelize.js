@@ -1,15 +1,21 @@
-import sq from 'sequelize';
+import {Sequelize} from 'sequelize';
 import config from '../../configure/config.js';
+import tweet from './model/tweetsModel.js';
+import user from './model/usersModel.js';
 
-const {host, port, user: username, pass: password, database} = config.mysql;
-const sequelize = new sq.Sequelize({
-    host,
-    port,
-    username,
-    password,
-    database,
-    dialect: "mysql",
-    logging: false,
-});
+/* 데이터베이스 접속을 위한 정보 셋팅 */
+const sequelize = new Sequelize(config.sequelize);
 
-export default sequelize;
+/* User 모델 생성 */
+const User = user(sequelize);
+
+/* Tweet 모델 생성 */
+const Tweet = tweet(sequelize);
+Tweet.belongsTo(User);
+
+const Model = {
+    User,
+    Tweet,
+};
+
+export {sequelize, Model};

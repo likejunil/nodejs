@@ -19,10 +19,14 @@ import CONSTANT from "./configure/CONSTANT.js";
 import {authProc} from "./middleware/auth/jwtAuth.js";
 import useCookie from "./middleware/cookie/cookie.js";
 import useSession from "./middleware/session/session.js";
+import multerOpt from "./middleware/multer/multer.js";
 
 /* router */
 import tweetsRouter from "./router/tweetsRout.js";
 import usersRouter from "./router/usersRout.js";
+
+/* repository */
+import {sequelize} from "./repository/sequelize/initSequelize.js";
 
 /* --------------------------- */
 /* middle ware */
@@ -48,7 +52,7 @@ app.use(session(config.session.option));
 app.use(useCookie);
 app.use(useSession);
 
-const upload = multer(config.multer);
+const upload = multer(multerOpt);
 
 /* --------------------------- */
 /* router */
@@ -62,8 +66,15 @@ app.use(url.TWEETS, tweetsRouter);
 /* --------------------------- */
 /* test */
 /* --------------------------- */
-/* middleware 내부에서 적용되는 req.url 에 주의할 것
-/* app.use(), app.METHOD() 가 다르다. app.all() 은 all.METHOD() 와 같다. */
+/**
+ * 1. 하나의 router(==> app.use, app.METHOD)에 여러개의 middleware(==> (req, res, next) => {...})를 적용할 수 있다.
+ * 2. next('route') 를 통해 현재 router 를 패스할 수 있다. (app.METHOD 만..)
+ * 3. next(Error) 를 통해 하나의 router 에 에러를 모으고 일괄 처리할 수 있다.
+ * 4. app.use(), app.METHOD() 의 차이를 이해한다. (req.url 주의..)
+ * 5. next() 를 호출한 후에도 middleware 는 계속 진행된다. (next() 이후 코드가 남아 있다면..)
+ * 6. res 를 통해서 응답하는 함수의 종류를 이해한다.
+ * 7. res 를 통한 응답은 한 번만 할 수 있다.
+ */
 /* '/test/*' 와 같은 표현은 적용되지 않는다. */
 app.use('/test', (req, res, next) => {
     console.log(`app.use("/test") 내부의 미들웨어에서 url=${req.url}`);
@@ -119,7 +130,7 @@ app.get('/test/:path', (req, res, next) => {
         /*
          next(error) 와 같이 인자를 넣어 호출하면 곧바로 에러 처리로 넘어간다.
          그래서 보통 try-catch 로 에러를 잡으면 next(error) 를 통해 에러 처리를 넘긴다.
-         에러 처리를 모아서 한 곳에서 모두 처리한다.
+         에러를 모아서 한 곳에서 모두 처리한다.
          */
         console.log('결국 에러를 냈군');
         next(err);
@@ -150,9 +161,52 @@ app.get('/test/:path', (req, res, next) => {
 });
 
 /* --------------------------- */
+/* file upload */
+/* --------------------------- */
+/**
+ * req.file: {
+ *   fieldname: 'image',
+ *   originalname: 'cat.jpg',
+ *   encoding: '7bit',
+ *   mimetype: 'image/jpeg',
+ *   destination: 'uploads/',
+ *   filename: 'cat_20230201_081624_109.jpg',
+ *   path: 'uploads/cat_20230201_081624_109.jpg',
+ *   size: 425426
+ * }
+ *
+ * req.body {
+ *   animal: 'cat',
+ *   color: 'blue'
+ * }
+ */
+app.post('/test/upload', upload.single('image'), (req, res) => {
+    console.log('req.file:', req.file);
+    console.log('req.body', req.body);
+    res.send('ok');
+});
+
+app.post('/test/uploads', upload.array('image'), (req, res) => {
+    console.log('req.files:', req.files);
+    console.log('req.body', req.body);
+    res.send('ok');
+});
+
+app.post('/test/uploads-many',
+    upload.fields([
+        {name: 'cat'},
+        {name: 'dog'},
+    ]),
+    (req, res) => {
+        console.log('req.files:', req.files);
+        console.log('req.body', req.body);
+        res.send('ok');
+    });
+
+/* --------------------------- */
 /* not found */
 /* --------------------------- */
-app.use((req, res, next) => {
+app.use((req, res) => {
     console.error(`해당 url 에 대한 서비스를 제공하지 않음, url = |${req.url}|`);
     res.sendStatus(404);
 });
@@ -168,15 +222,23 @@ app.use((error, req, res, next) => {
 });
 
 Promise.all([
-        // sequelize.sync(),
+        sequelize.sync({force: true}),
         // connectMongo(),
     ])
     .then(res => {
-        // console.log(res);
+        const sequelizeRes = res[0];
+        const {database, username, host, port} = sequelizeRes.config;
+        console.log('connected Sequelize: '
+            + `host=|${host}|, `
+            + `port=|${port}|, `
+            + `database=|${database}|, `
+            + `username=|${username}|`)
+        
         /* app start */
         const server = app.listen(config.express.port, () => {
             console.log(`***** listening port: ${config.express.port} *****`);
         });
+        
         /* socket.io 사용 */
         // initSocket(server);
     })

@@ -1,3 +1,6 @@
+const LOG = false;
+const log = () => LOG && console.log;
+
 const cookie = (req, res, next) => {
     let visitCount = 0;
     
@@ -5,10 +8,10 @@ const cookie = (req, res, next) => {
     // const cookies = req.cookies;
     const cookies = req.signedCookies;
     if (Object.keys(cookies).length === 0) {
-        console.log('쿠기 없음');
+        log('쿠기 없음');
     } else {
         // 쿠키는 객체
-        console.log('수신한 쿠기:', cookies);
+        log('수신한 쿠기:', cookies);
         for (const m in cookies) {
             if (m === 'visitCount') {
                 visitCount = parseInt(cookies[m]);
@@ -18,13 +21,13 @@ const cookie = (req, res, next) => {
     
     // 쿠키 삭제
     if (visitCount > 3) {
-        console.log('쿠키 삭제');
+        log('쿠키 삭제');
         res.clearCookie('visitCount', {path: '/auth'});
         return next();
     }
     
     // 쿠키 생성
-    console.log('쿠키 생성|수정');
+    log('쿠키 생성|수정');
     res.cookie('visitCount', visitCount + 1, {
         httpOnly: true,
         signed: true,
