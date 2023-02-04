@@ -69,6 +69,7 @@ export default (sequelize) => {
             email: {
                 type: DataTypes.STRING(256),
                 allowNull: false,
+                unique: true,
             },
         },
         
@@ -81,12 +82,22 @@ export default (sequelize) => {
             collate,
             tableName,
             modelName,
+            indexes: [
+                {
+                    /* 이름 기본값: {table_name}_{field_name} */
+                    name: 'idx_user_name',
+                    fields: ['name'],
+                }
+            ],
         },
     );
     
+    /*
+    이 코드가 왜 적용되지 않는지 모르겠다.
     User.associate = (models) => {
         User.hasMany(models.Tweet, {foreignKey: 'user_id', sourceKey: 'id'});
     };
+     */
     
     return User;
 }

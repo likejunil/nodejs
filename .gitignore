@@ -72,8 +72,9 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-src/lecture/ellie/proj/dweeter/.env
-**/.env
+# 학습 중이라서.. 잠시 허용
+#src/lecture/ellie/proj/dweeter/.env
+#**/.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)

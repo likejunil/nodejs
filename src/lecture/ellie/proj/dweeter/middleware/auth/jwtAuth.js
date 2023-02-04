@@ -8,7 +8,6 @@ import * as repository from '../../repository/mysql/usersDbSqlRepo.js';
 const AUTH_PASS = [
     '/auth/login',
     '/auth/signup',
-    '/desired-error',
 ];
 
 /**
@@ -21,6 +20,7 @@ const AUTH_PASS = [
 const isPass = (path) => {
     if (AUTH_PASS.includes(path)) return true;
     if (path.startsWith('/test')) return true;
+    if (path.startsWith('/upload')) return true;
 }
 
 /**

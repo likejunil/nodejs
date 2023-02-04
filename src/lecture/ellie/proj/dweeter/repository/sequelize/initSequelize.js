@@ -11,7 +11,13 @@ const User = user(sequelize);
 
 /* Tweet 모델 생성 */
 const Tweet = tweet(sequelize);
-/* Tweet.belongsTo(User); */
+
+/*
+User.hasMany(Tweet);
+Tweet.belongsTo(User);
+ */
+User.hasMany(Tweet, {foreignKey: 'userId', sourceKey: 'id'});
+Tweet.belongsTo(User, {foreignKey: 'userId', targetKey: 'id'});
 
 const Model = {
     User,

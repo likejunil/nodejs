@@ -4,6 +4,9 @@ import {Model} from "./initSequelize.js";
  * << model >>
  * Model.create()
  * Model.find()
+ *  - Model.findByPk()
+ *  - Model.findOne()
+ *  - Model.findAll()
  * Model.update()
  * Model.destroy()
  *

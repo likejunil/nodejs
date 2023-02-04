@@ -37,9 +37,12 @@ export default (sequelize) => {
         },
     );
     
-    Tweet.associate = (models) => {
+    /*
+    이 코드가 왜 적용되지 않는지 모르겠다.
+    Tweet.associate = models => {
         Tweet.belongsTo(models.User, {foreignKey: 'user_id', targetKey: 'id'});
     };
+     */
     
     return Tweet;
 };

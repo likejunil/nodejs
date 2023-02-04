@@ -37,7 +37,7 @@ const include = {
 };
 
 const order = [
-    ['createdAt', 'desc']
+    ['created_at', 'desc']
 ];
 
 export const findById = async (id) => {
@@ -47,11 +47,12 @@ export const findById = async (id) => {
             include,
             order,
         })
-        .then(res => res.dataValues);
+        .then(res => res ? res.dataValues: null);
+    
 };
 
 export const findByUsername = async (username) => {
-    return Tweet.findOne({
+    return Tweet.findAll({
         attributes,
         order,
         include: {
@@ -69,17 +70,15 @@ export const findAll = async () => {
     });
 };
 
-export const remove = async (id) => {
-    return Tweet
-        .findByPk(id)
-        .then(res => {
-            res.destroy();
-        });
-};
-
 export const update = async (tweet) => {
     const {id} = tweet;
     return Tweet
         .findByPk(id)
-        .then(res => res.save(tweet));
+        .then(res => res.set(tweet).save());
+};
+
+export const remove = async (id) => {
+    return Tweet
+        .findByPk(id)
+        .then(res => res.destroy());
 };

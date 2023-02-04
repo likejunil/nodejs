@@ -66,5 +66,7 @@ export const login = async (req, res) => {
  */
 export const getAll = async (req, res) => {
     const users = await repository.findAll();
-    res.status(200).json(users);
+    const ret = users.map(user => user.dataValues)
+        .map(user => ({...user, password: '*'}))
+    res.status(200).json(ret);
 };
