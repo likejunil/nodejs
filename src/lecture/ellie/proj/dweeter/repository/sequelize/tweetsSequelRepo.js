@@ -72,13 +72,19 @@ export const findAll = async () => {
 
 export const update = async (tweet) => {
     const {id} = tweet;
+    /*
     return Tweet
         .findByPk(id)
         .then(res => res.set(tweet).save());
+     */
+    return await Tweet.update(tweet, {where: {id}})
 };
 
 export const remove = async (id) => {
+    /*
     return Tweet
         .findByPk(id)
         .then(res => res.destroy());
+     */
+    return Tweet.destroy({where: {id}});
 };

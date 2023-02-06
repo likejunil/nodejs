@@ -87,6 +87,7 @@ export default (sequelize) => {
                     /* 이름 기본값: {table_name}_{field_name} */
                     name: 'idx_user_name',
                     fields: ['name'],
+                    unique: true,
                 }
             ],
         },

@@ -71,7 +71,7 @@ export const update = async (req, res) => {
         return res.status(404).json({message: '글을 수정하지 못했습니다.'});
     }
     
-    res.status(200).json(ret);
+    res.status(200).json(save);
 }
 
 /**
@@ -86,7 +86,8 @@ export const remove = async (req, res) => {
             console.error(`해당 글을 삭제할 권한이 없음 , tweetid = |${tweetid}}|, userId = |${userId}|`);
             return res.status(403).json({message: '해당 tweet 을 삭제할 권한이 없습니다.'});
         }
-        await repository.remove(tweetid);
+        const count = await repository.remove(tweetid);
+        console.log(`${count}건의 데이터 삭제 완료`);
     }
     
     res.sendStatus(204);
