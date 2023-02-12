@@ -10,8 +10,22 @@ const Profile = sequelize.define(
             defaultValue: DataTypes.DATE.now,
         },
         
-        /* 기본적으로 null 허용, 기본값은 null */
+        gender: {
+            type: DataTypes.STRING(12),
+            validate: {
+                /* https://sequelize.org/docs/v6/core-concepts/validations-and-constraints/ */
+                is: /^남자$|^여자$|^제3의 성$/,
+            },
+        },
+        birthday: DataTypes.DATEONLY,
+        age: DataTypes.TINYINT.UNSIGNED,
+        married: DataTypes.BOOLEAN,
         phone: DataTypes.STRING(16),
+        
+        major: DataTypes.STRING(32),
+        job: DataTypes.STRING(32),
+        
+        
     },
     {
         timestamps: true,

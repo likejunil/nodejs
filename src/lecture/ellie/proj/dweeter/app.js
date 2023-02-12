@@ -92,7 +92,7 @@ app.use((error, req, res, next) => {
 /* --------------------------- */
 Promise.all([
         sequelize.sync({force: false}),
-        // connectMongo(),
+        connectMongo(),
     ])
     .then(res => {
         const sequelizeRes = res[0];

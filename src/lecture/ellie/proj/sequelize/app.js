@@ -1,28 +1,21 @@
-const sequelize = require('./repository/initSequelize.js');
-const Member = require('./repository/model/member.js');
-const Profile = require('./repository/model/profile.js');
-const proc = require('./test/test.js');
+const {sequelize} = require('./repository/associateModel.js');
+const proc = require('./test.js');
 
-console.log(''
+console.log('\n'
     + '******************\n'
     + '  프로그램 시작\n'
     + '******************\n');
 
-/* Member(1) : (1)Profile */
-/* onDelete, onUpdate: 'RESTRICT', 'CASCADE', 'NO ACTION', 'SET DEFAULT', 'SET NULL' */
-Member.hasOne(Profile, {foreignKey: 'userId', sourceKey: 'id'});
-Profile.belongsTo(Member, {foreignKey: 'userId', targetKey: 'id'});
-
-/* */
-
-
-sequelize.sync({force: true})
+sequelize.sync({force: false, alter: false})
     .then(() => {
         console.log('데이터베이스와의 동기화 작업 완료');
-        proc();
+        return proc();
     })
     .catch(err => {
-        console.error(err);
+        console.error(err.message);
+        console.log('\n'
+            + '******************\n'
+            + '  프로그램 종료\n'
+            + '******************\n');
         process.exit(-1);
     });
-

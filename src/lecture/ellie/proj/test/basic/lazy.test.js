@@ -2,7 +2,7 @@ const {lazy} = require('./lazy.js');
 
 describe('async', () => {
     it('async - then', () => {
-        lazy('red').then(res =>
+        return lazy('red').then(res =>
             expect(res).toEqual({name: 'red'}));
     })
     

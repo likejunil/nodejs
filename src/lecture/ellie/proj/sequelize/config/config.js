@@ -24,7 +24,6 @@ const config = {
         // logging: false,
     },
     
-    
 };
 
 module.exports = config;

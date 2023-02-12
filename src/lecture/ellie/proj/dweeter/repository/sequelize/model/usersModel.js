@@ -16,7 +16,6 @@ import {DataTypes} from 'sequelize';
  * - FLOAT
  * - DOUBLE
  * - DECIMAL
- *
  * - INTEGER.UNSIGNED
  * - INTEGER.ZEROFILL
  *
