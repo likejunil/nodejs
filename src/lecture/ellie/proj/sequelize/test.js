@@ -27,7 +27,7 @@ const a__User생성_저장_수정_Family연결 = async () => {
     try {
         /* Model.destory() 는 where 조건이 없으면 에러가 발생한다. */
         /* truncate 옵션으로 destroy() 를 실행할 수 있다. */
-        /* force 옵션을 통해 soft delete 를 선택할 수 있다. */
+        /* force: false 옵션을 통해 soft delete 를 선택할 수 있다. */
         await User.destroy({
             where: {id: {[Op.ne]: 0}},
             force: true,
@@ -44,8 +44,8 @@ const a__User생성_저장_수정_Family연결 = async () => {
          */
         const user = createRandomUser();
         const model = User.build(user);
-        // await model.save();
         /* 특정 컬럼만을 선택하여 저장할 수 있다. */
+        // await model.save();
         const saved = await model.save({
             fields: ['email', 'password'],
             transaction: t
@@ -61,7 +61,7 @@ const a__User생성_저장_수정_Family연결 = async () => {
         saved.email = 'likejunil@gmail.com';
         /* update() 는 반드시 인자가 필요하다. */
         /* 인자가 없으면 아무런 일도 일어나지 않는다. */
-        saved.update({transaction: t});
+        await saved.update({transaction: t});
         /* name, email 갱신이 여기서 적용된다. */
         await saved.save({transaction: t});
         await created.update({name: '효진'}, {transaction: t});
@@ -132,8 +132,8 @@ const b__Family에서_User들_불러와서_다루기 = async () => {
                         name: '준일',
                         id: {[Op.gt]: Sequelize.col('Family.id')},
                     },
-                    /* 기본값이 true 이다. 만족하는 결과가 없으면 null 을 반환한다. */
-                    /* 가능하면 false 로 사용하는 것이 좋다. */
+                    /* false: LEFT OUTER JOIN */
+                    /* true: INNTER JOIN */
                     required: false,
                 },
                 order: [
@@ -165,7 +165,9 @@ const b__Family에서_User들_불러와서_다루기 = async () => {
             const count = await family.countUsers();
             const has = await family.hasUser(users[0]);
             await family.removeUser(users[1], {transaction: t});
+            
             // throw new Error('트랜잭션 테스트 중..');
+            
             await family.addUser(users[1], {transaction: t});
             
             /* findAll() 은 배열을, findOne() 은 객체를 반환한다. */
@@ -174,7 +176,7 @@ const b__Family에서_User들_불러와서_다루기 = async () => {
                 where: {id: family.id},
                 include: {
                     model: User,
-                    /* false: LEFT OUTER JOIN (default) */
+                    /* false: LEFT OUTER JOIN */
                     /* true: INNTER JOIN */
                     required: false,
                 },
@@ -262,7 +264,6 @@ const c__다양한_함수들_사용하기 = async () => {
                 createRandomUser('정대만'),
                 createRandomUser('정우성'),
             ], {transaction: t});
-            console.assert(users.length === 2);
             
             /* 배열을 반환한다. */
             /* [0] 갱신한 데이터의 개수 */
