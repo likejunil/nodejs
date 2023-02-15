@@ -58,9 +58,7 @@ const config = {
             saveUninitialized: false,
             secret: required('SESSION_SECRET'),
             name: 'session.id',
-            cookie: {
-                httpOnly: true,
-            },
+            cookie: {httpOnly: true,},
         },
     },
     
