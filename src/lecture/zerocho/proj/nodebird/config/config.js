@@ -44,9 +44,16 @@ const config = {
     sequelize: {
         host: required('DB_HOST', '127.0.0.1'),
         port: parseInt(required('DB_PORT', 3306)),
-        user: required('DB_USER', 'june1'),
-        pass: required('DB_PASS'),
+        username: required('DB_USER', 'june1'),
+        password: required('DB_PASS'),
         database: required('DB_DATABASE', 'nodebird'),
+        dialect: "mysql",
+        define: {
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci',
+            timestamps: true,
+        },
+        // logging: false,
     },
 };
 

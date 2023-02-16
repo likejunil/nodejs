@@ -1,6 +1,6 @@
 {
-  "name": "nodebird",
-  "version": "1.0.0",
+  "name": "준일님 node 학습 프로그램",
+  "version": "0.0.1",
   "description": "nodejs 를 학습하기 위해 해보는 프로젝트",
   "main": "app.js",
   "scripts": {
