@@ -16,8 +16,8 @@ import CONSTANT from "./configure/CONSTANT.js";
 
 /* middleware */
 import {authProc} from "./middleware/auth/jwtAuth.js";
-import useCookie from "./middleware/cookie/cookie.js";
-import useSession from "./middleware/session/session.js";
+import useCookie from "./middleware/cookie";
+import useSession from "./middleware/session";
 
 /* router */
 import tweetsRouter from "./router/tweetsRout.js";

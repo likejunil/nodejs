@@ -1,7 +1,7 @@
 const LOG = false;
 const log = () => LOG && console.log;
 
-const cookie = (req, res, next) => {
+const index = (req, res, next) => {
     let visitCount = 0;
     
     /* ------------------------ */
@@ -44,4 +44,4 @@ const cookie = (req, res, next) => {
     
 };
 
-export default cookie;
+export default index;

@@ -22,8 +22,8 @@ const required = (key, defaultValue = undefined) => {
  * . jwt
  * . bcrypt
  * . morgan
- * . cookie
- * . session
+ * . index
+ * . index
  * . express
  * . db
  * .
@@ -57,7 +57,7 @@ const config = {
             /* 세션에 저장할 내용이 없더라도 처음부터 세션을 설정할지.. */
             saveUninitialized: false,
             secret: required('SESSION_SECRET'),
-            name: 'session.id',
+            name: 'index.id',
             cookie: {httpOnly: true,},
         },
     },

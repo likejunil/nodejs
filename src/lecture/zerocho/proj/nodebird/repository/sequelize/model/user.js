@@ -8,15 +8,16 @@ const User = sequelize.define(
             type: DataTypes.STRING(16),
             defaultValue: 'local',
             allowNull: false,
+            unique: 'provider_email',
         },
         email: {
             type: DataTypes.STRING(64),
-            allowNull: true,
+            allowNull: false,
             /* null 중복은 가능한가? */
-            unique: true,
+            unique: 'provider_email',
         },
-        snsId: DataTypes.STRING(64),
         password: DataTypes.STRING(256),
+        snsId: DataTypes.STRING(64),
         nick: DataTypes.STRING(32),
     },
     {
@@ -31,19 +32,19 @@ const associate = (db) => {
     User.hasMany(db.Post);
     User.belongsToMany(User, {
         /* 내가 누구를!! 따르고 있나 */
-        through: 'Follow',
+        through: 'follow',
         foreignKey: 'followingId',
         as: 'Followers',
     });
     User.belongsToMany(User, {
         /* 누가 나를!! 따르고 있나 */
-        through: 'Follow',
+        through: 'follow',
         foreignKey: 'followerId',
         as: 'Followings',
     });
 }
 
-module.export = {
+module.exports = {
     User,
     associate,
 };

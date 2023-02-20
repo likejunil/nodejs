@@ -19,9 +19,7 @@ const Post = sequelize.define(
 
 const associate = (db) => {
     Post.belongsTo(db.User);
-    Post.belongsToMany(db.HashTag, {
-        through: 'PostHashTag',
-    });
+    Post.belongsToMany(db.Hashtag, {through: 'postHashtag',});
 };
 
 module.exports = {

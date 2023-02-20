@@ -1,8 +1,8 @@
 const LOG = false;
 const log = () => LOG && console.log;
 
-const session = (req, res, next) => {
-    /* req.session 은 해당 사용자만을 위한 전용 공간이다. */
+const index = (req, res, next) => {
+    /* req.index 은 해당 사용자만을 위한 전용 공간이다. */
     log('세션 수신:', req.session.data);
     
     /* 세션 수정 */
@@ -22,4 +22,4 @@ const session = (req, res, next) => {
     next();
 };
 
-export default session;
+export default index;

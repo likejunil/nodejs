@@ -1,8 +1,8 @@
 const {sequelize, defaultConfig} = require('../initialize.js');
 const {DataTypes} = require('sequelize');
 
-const HashTag = sequelize.define(
-    'HashTag',
+const Hashtag = sequelize.define(
+    'Hashtag',
     {
         tag: {
             type: DataTypes.STRING(32),
@@ -13,16 +13,15 @@ const HashTag = sequelize.define(
     {
         ...defaultConfig,
         tableName: 'hashtag',
+        paranoid: false,
     },
 );
 
 const associate = (db) => {
-    HashTag.belongsToMany(db.Post, {
-        through: 'PostHashTag',
-    });
+    Hashtag.belongsToMany(db.Post, {through: 'postHashtag',});
 };
 
 module.exports = {
-    HashTag,
+    Hashtag,
     associate,
 };

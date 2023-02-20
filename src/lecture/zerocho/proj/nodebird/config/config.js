@@ -31,8 +31,10 @@ const config = {
             resave: false,
             /* 세션에 저장할 내용이 없더라도 처음부터 세션을 저장하는가? */
             saveUninitialized: false,
-            secret: required('SESSION_SECRET'),
-            name: 'session.id',
+            /* 반드시 쿠키 암호화 키와 같아야 한다. */
+            // secret: required('SESSION_SECRET'),
+            secret: required('COOKIE_SIGN'),
+            name: 'connect.sid',
             cookie: {
                 httpOnly: true,
                 /* https 로 변경할 때 secure 를 true 로 설정 */
@@ -54,6 +56,17 @@ const config = {
             timestamps: true,
         },
         // logging: false,
+    },
+    
+    bcrypt: {
+        salt: 9,
+    },
+    
+    passport: {
+        kakao: {
+            clientID: 'a824b6155ee9a02f2f0d83d2b22950f9',
+            callback: '/auth/kakao/callback',
+        },
     },
 };
 
