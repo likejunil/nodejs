@@ -31,15 +31,15 @@ const User = sequelize.define(
 const associate = (db) => {
     User.hasMany(db.Post);
     User.belongsToMany(User, {
-        /* 내가 누구를!! 따르고 있나 */
         through: 'follow',
         foreignKey: 'followingId',
+        /* belongsToMany 에서의 복수표현 주의 */
         as: 'Followers',
     });
     User.belongsToMany(User, {
-        /* 누가 나를!! 따르고 있나 */
         through: 'follow',
         foreignKey: 'followerId',
+        /* belongsToMany 에서의 복수표현 주의 */
         as: 'Followings',
     });
 }

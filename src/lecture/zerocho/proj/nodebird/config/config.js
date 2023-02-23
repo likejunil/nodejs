@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const process = require("process");
 dotenv.config();
 
 const required = (key, defaultValue) => {
@@ -13,6 +14,8 @@ const required = (key, defaultValue) => {
 };
 
 const config = {
+    rootPath: process.env.PWD,
+    
     express: {
         port: parseInt(required('EXPRESS_PORT', 8001)),
     },

@@ -15,16 +15,19 @@ const nunjucks = require('nunjucks');
 
 const auth = require('./router/authRout.js');
 const page = require('./router/pageRout.js');
+const post = require('./router/postRout.js');
+const user = require('./router/userRout.js');
 const initPassport = require('./middleware/passport');
 const useCookies = require('./middleware/cookie');
 const useSession = require('./middleware/session');
 const app = express();
-const log = console.log;
+const log = () => {};
 
 /* ----------------------- */
 /* 설정 */
 /* ----------------------- */
 /* nunjucks 설정 */
+/* views 디렉토리에 html 확장자를 가진 템플릿을 사용 */
 app.set('view engine', 'html');
 nunjucks.configure('views', {
     /* 보안을 위해 설정 */
@@ -39,7 +42,8 @@ nunjucks.configure('views', {
 /* 적용 */
 /* ----------------------- */
 /* 제일 먼저 보안처리부터.. */
-app.use(helmet());
+/* Refused to load the script 'https://unpkg.com/axios/dist/axios.min.js' 때문에 잠시 해제 */
+// app.use(helmet());
 
 /* 인증 이전에 정적 데이터를 먼저 처리 */
 /* 정적 데이터에도 인증이 필요하다면 순서 조정 필요 */
@@ -50,7 +54,7 @@ app.use("/", (req, res, next) => {
     /* 따라서 이미 call-stack 에 올라온 모든 함수가 종료 처리된다. */
     /* 그리고 next() 가 호출되면서 다음 router 가 실행된다. */
     // todo 2023.0220
-    //  - /auth/logout 의 경우 왜 여기서 async 로 실행되는지 모르겠다.
+    //  - 언제 async 로 실행되는가?
     log();
     express.static(path.join(__dirname, 'public'))(req, res, next);
     log();
@@ -59,14 +63,13 @@ app.use("/", (req, res, next) => {
 /* 요청에 대한 로그 기록 */
 app.use(morgan(config.morgan.level));
 
-/* 사용자가 "/img/..." 으로 이미지를 올릴 경우 */
-/* 사용자가 파일을 업로드하는 것은 로그를 남길 필요가 있으므로.. */
+/* 사용자가 "/img/..." 파일을 요청할 때는 로그를 남길 필요가 있다. */
 app.use("/img", (req, res, next) => {
     /* "/img" 에 대한 요청이 들어오면 async 로 처리가 된다. */
     /* 따라서 이미 call-stack 에 올라온 모든 함수가 종료 처리된다. */
     /* 그리고 next() 가 호출되면서 다음 router 가 실행된다. */
     log();
-    express.static(path.join(__dirname, "upload"))(req, res, next);
+    express.static(path.join(config.rootPath, "upload"))(req, res, next);
     log();
 });
 
@@ -145,6 +148,8 @@ app.use((req, res, next) => {
 /* 실제 요청 처리를 위한 모든 미들웨어의 처리가 끝났으므로 서비스 분기 시작 */
 app.use("/auth", auth);
 app.use("/", page);
+app.use("/post", post);
+app.use("/user", user);
 
 /* ----------------------- */
 /* 에러 */
