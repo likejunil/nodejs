@@ -21,7 +21,8 @@ const initPassport = require('./middleware/passport');
 const useCookies = require('./middleware/cookie');
 const useSession = require('./middleware/session');
 const app = express();
-const log = () => {};
+const log = () => {
+};
 
 /* ----------------------- */
 /* 설정 */
@@ -164,7 +165,7 @@ app.use((req, res, next) => {
 /* handle error */
 /* 반드시 err 매개변수를 포함하여 4개의 인자를 전달해야 한다. */
 /* app.locals: 프로세스 전반에 걸친 저장소 */
-/* req.app.locals: middleware 에서 req 를 통해 app.locals 를 사용 */
+/* req.app.locals: middleware 에서 req 를 통해 app 의 지역변수를 사용 */
 /* res.locals: 해당 요청에 대해서만 유효한 데이터 저장 */
 app.use((err, req, res, next) => {
     res.locals.message = err.message;

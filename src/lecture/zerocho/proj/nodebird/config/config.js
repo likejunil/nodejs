@@ -58,7 +58,7 @@ const config = {
             collate: 'utf8mb4_unicode_ci',
             timestamps: true,
         },
-        // logging: false,
+        // logging: console.log,
     },
     
     bcrypt: {
