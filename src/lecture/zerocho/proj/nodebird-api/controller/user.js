@@ -1,5 +1,5 @@
 const {User} = require('../repository/sequelize/model/user');
-const {raiseError} = require('../util/raiseError.js');
+const {raiseError} = require('../util/error.js');
 
 const attributes = [
     'id',
