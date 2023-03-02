@@ -13,6 +13,7 @@ const initPassport = require('./middleware/passport');
 const {sequelize} = require('./repository/sequelize/associate.js');
 
 const test = require('./middleware/test/test.js');
+const {isLoggedIn} = require('./middleware/passport/checkLogin.js');
 const auth = require('./router/auth.js');
 const user = require('./router/user.js');
 const band = require('./router/band.js');
@@ -69,6 +70,7 @@ app.use('/test', test);
 
 /* router */
 app.use('/auth', auth);
+app.use(isLoggedIn);
 app.use('/user', user);
 app.use('/band', band);
 

@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const {bcrypt: {salt}} = require('../config/config.js');
 const passport = require('passport');
 const {User} = require('../repository/sequelize/model/user.js');
-const {raiseError} = require('../util/raiseError.js');
+const {raiseError} = require('../util/error.js');
 
 /**
  * << 해당 조건의 사용자가 없음을 확인하라 >>
