@@ -34,7 +34,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 app.use(morgan(config.morgan.level));
 
 /* 보안 */
-// app.use(helmet);
+app.use(helmet());
 
 /* content-type: application/x-www-formed-urlencoded */
 /* 다음을 적용하지 않으면 application/x-www-formed-urlencoded 를 통해 전달하는 데이터를 받을 수 없음 */
@@ -68,9 +68,15 @@ app.use(passport.session())
 /* test 를 위한 라우터 */
 app.use('/test', test);
 
+/* 진행 과정 확인 */
+app.use((req, res, next) => {
+    log();
+    next();
+    log();
+})
+
 /* router */
 app.use('/auth', auth);
-app.use(isLoggedIn);
 app.use('/user', user);
 app.use('/band', band);
 

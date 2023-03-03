@@ -1,6 +1,7 @@
 const passport = require('passport');
 const {User} = require('../../repository/sequelize/model/user.js');
 const local = require('./strategy/local.js');
+const kakao = require('./strategy/kakao.js');
 
 /** session 에 저장 */
 const serialize = () => {
@@ -27,6 +28,7 @@ const deserialize = () => {
             
             /* req.user 에 user model 을 저장하여 사용 */
             /* req.user = user */
+            /* done() 에 의해 다음 router 로 이동 */
             done(null, user);
             
         } catch (err) {
@@ -40,6 +42,7 @@ const initPassport = () => {
     deserialize();
     
     local();
+    kakao();
 }
 
 /* deserialize 는 sequelize 에 의존한다. */

@@ -19,6 +19,7 @@ const User = sequelize.define(
             type: DataTypes.STRING(32),
             allowNull: false,
         },
+        snsId: DataTypes.STRING(32),
         password: DataTypes.STRING(256),
         age: DataTypes.INTEGER.UNSIGNED,
         married: DataTypes.BOOLEAN,

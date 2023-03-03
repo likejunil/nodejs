@@ -59,6 +59,11 @@ const config = {
     bcrypt: {
         salt: parseInt(required('SALT_ROUND', 9)),
     },
+    
+    kakao: {
+        clientKey: required('KAKAO_CLIENT_KEY'),
+        callback: '/auth/kakao/callback',
+    },
 };
 
 module.exports = config;

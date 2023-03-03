@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
-const {bcrypt: {salt}} = require('../config/config.js');
+const {bcrypt: {salt}} = require('../../config/config.js');
 const passport = require('passport');
-const {User} = require('../repository/sequelize/model/user.js');
-const {raiseError} = require('../util/error.js');
+const {User} = require('../../repository/sequelize/model/user.js');
+const {raiseError} = require('../../util/error.js');
 
 /**
  * << 해당 조건의 사용자가 없음을 확인하라 >>
@@ -52,7 +52,7 @@ const join = async (req, res, next) => {
     
     checkUserNotExist(email, provider)
         .then(() => createAccount({...fields, provider}))
-        .then(created => res.json({message: `User created successfully, id=|${created.id}|`}))
+        .then(created => res.json({message: `User created successfully, id=|${created?.id}|`}))
         .catch(next);
 };
 
@@ -94,8 +94,9 @@ const login = async (req, res, next) => {
  * /auth/logout
  */
 const logout = (req, res, next) => {
+    /* req.logout() 에 의해 req.session.passport 의 내용이 삭제 */
+    /* req.logout(func) 의 인자 func 는 passport.deserialize 가 종료된 후 호출 */
     req.logout(() => {
-        /* */
         res.json({message: 'You are logged out.'});
     });
 };
