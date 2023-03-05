@@ -4,23 +4,33 @@ const {sequelize, defaultOpt} = require('../initialize.js');
 const User = sequelize.define(
     'User',
     {
-        email: {
-            type: DataTypes.STRING(32),
-            allowNull: false,
-            unique: 'provider-email',
-        },
         provider: {
             type: DataTypes.ENUM('local', 'kakao', 'naver', 'google'),
             allowNull: false,
-            unique: 'provider-email',
             defaultValue: 'local',
+            unique: 'provider-uniqueId',
         },
-        name: {
+        
+        /* local 의 경우 사용자가 정함, 로그인할 때 사용 */
+        /* oauth 의 경우 제공 받음 */
+        uniqueId: {
+            type: DataTypes.STRING(36),
+            allowNull: false,
+            unique: 'provider-uniqueId',
+        },
+        
+        /* 사용자에게 보여지는 이름 */
+        /* local 의 경우 최초 uniqueId 와 같음 */
+        /* oauth 의 경우 제공 받음 */
+        nick: {
             type: DataTypes.STRING(32),
             allowNull: false,
         },
-        snsId: DataTypes.STRING(32),
+        
+        /* local 의 경우 필수 */
         password: DataTypes.STRING(256),
+        
+        email: DataTypes.STRING(32),
         age: DataTypes.INTEGER.UNSIGNED,
         married: DataTypes.BOOLEAN,
         birthday: DataTypes.DATEONLY,

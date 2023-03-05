@@ -6,15 +6,15 @@ const {raiseError} = require('../../util/error.js');
 
 /**
  * << 해당 조건의 사용자가 없음을 확인하라 >>
- * email, provider 의 조합은 사용자를 판별할 수 있는 기준이다.
+ * uniqueId, provider 의 조합은 사용자를 판별할 수 있는 기준이다.
  * 해당 조건의 사용자가 존재하면 에러를 발생시킨다.
  *
- * @param email
+ * @param uniqueId
  * @param provider
  */
-const checkUserNotExist = async (email, provider) => {
-    const user = await User.findOne({where: {email, provider}});
-    if (user) raiseError(400, "User already exists.");
+const checkUserNotExist = async (uniqueId, provider) => {
+    const user = await User.findOne({where: {uniqueId, provider}});
+    if (user) raiseError(400, `User already exists. id=|${uniqueId}|`);
 };
 
 /**
@@ -25,7 +25,7 @@ const checkUserNotExist = async (email, provider) => {
  */
 const createAccount = async (info) => {
     const {password: plain} = info;
-    if (!plain) raiseError(400, "Please fill in your password.");
+    if (!plain) raiseError(400, "Please enter your password.");
     const password = await bcrypt.hash(plain, salt);
     /* undefined 는 null 로 입력된다. */
     return await User.create({...info, password});
@@ -37,8 +37,8 @@ const createAccount = async (info) => {
  * @returns {name, email, password, age, married, birthday}
  */
 const filterJoinField = (input) => {
-    const {name, email, password, age, married, birthday} = input;
-    return {name, email, password, age, married, birthday};
+    const {uniqueId, password, email, age, married, birthday} = input;
+    return {uniqueId, password, email, age, married, birthday};
 }
 
 /**
@@ -47,11 +47,11 @@ const filterJoinField = (input) => {
  */
 const join = async (req, res, next) => {
     const fields = filterJoinField(req.body);
-    const {email} = fields;
+    const {uniqueId} = fields;
     const provider = 'local';
     
-    checkUserNotExist(email, provider)
-        .then(() => createAccount({...fields, provider}))
+    checkUserNotExist(uniqueId, provider)
+        .then(() => createAccount({...fields, provider, nick: uniqueId}))
         .then(created => res.json({message: `User created successfully, id=|${created?.id}|`}))
         .catch(next);
 };
