@@ -3,9 +3,10 @@ const {raiseError} = require('../util/error.js');
 
 const attributes = [
     'id',
-    'email',
+    'uniqueId',
     'provider',
-    'name',
+    'nick',
+    'email',
     'age',
     'married',
     'birthday',
@@ -16,17 +17,17 @@ const order = [
 ];
 
 /* 유니크한 컬럼을 인자로 넘겨 단건의 사용자를 조회한다. */
-/* id | email, provider */
+/* id | uniqueId, provider */
 const getUser = async (query) => {
-    const {id, email, provider} = query;
+    const {id, uniqueId, provider} = query;
     const where = {};
     /* id 만으로 조회 */
     if (id) {
         where.id = id;
     }
-    /* email, provider 의 조합으로만 조회 */
-    else if (email && provider) {
-        where.email = email;
+    /* uniqueId, provider 의 조합으로만 조회 */
+    else if (uniqueId && provider) {
+        where.uniqueId = uniqueId;
         where.provider = provider;
     }
     
@@ -35,10 +36,12 @@ const getUser = async (query) => {
 
 /* 다양한 컬럼을 인자로 받아서 복수의 사용자를 조회한다. */
 const getUsers = async (query) => {
-    const {email, name, age, married, birthday} = query;
+    const {uniqueId, provider, nick, email, age, married, birthday} = query;
     const where = {};
+    if (uniqueId) where.uniqueId = uniqueId;
+    if (provider) where.provider = provider;
+    if (nick) where.nick = nick;
     if (email) where.email = email;
-    if (name) where.name = name;
     if (age) where.age = age;
     if (married) where.married = married;
     if (birthday) where.birthday = birthday;
@@ -57,8 +60,8 @@ const checkLocalUser = (user) =>
     (user && user.provider === 'local') ? user : raiseError(400, "It must be a local user");
 
 const filterModifyField = (input) => {
-    const {email, name, age, married, birthday} = input;
-    return {email, name, age, married, birthday};
+    const {nick, email, age, married, birthday} = input;
+    return {nick, email, age, married, birthday};
 }
 
 /**
@@ -85,7 +88,7 @@ const findUsers = async (req, res, next) => {
 /**
  * PUT /user/:id
  *  - provider === 'local' 인 사용자만 정보 갱신 가능
- *  - email, name, age, married, birthday
+ *  - nick, email, age, married, birthday
  */
 const updateById = async (req, res, next) => {
     const {id} = req.params;

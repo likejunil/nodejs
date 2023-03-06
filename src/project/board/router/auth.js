@@ -13,6 +13,8 @@ auth.post('/logout', isLoggedIn, logout);
 /* kakao */
 auth.get('/kakao/login', isNotLoggedIn, kakaoIn);
 auth.post('/kakao/logout', isNotLoggedIn, kakaoOut);
-auth.get('/kakao/callback', kakaoCb)
+auth.get('/kakao/callback', kakaoCb, (req, res, next) => {
+    res.json({message: 'You are logged in.'});
+})
 
 module.exports = auth;

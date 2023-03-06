@@ -13,9 +13,11 @@ const onlyOwner = (req, res, next) => {
 };
 
 /* 인증한 사용자의 허용만을 허락한다. */
+/* / 이하의 모든 url 에 대하여 검증한다. */
 user.use('/', isLoggedIn);
 
 user.get('/', findUsers);
+
 user.route('/:id')
     .get(findById)
     .put(onlyOwner, updateById)

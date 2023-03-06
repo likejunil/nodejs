@@ -27,22 +27,27 @@ const kakao = () => passport.use(new Strategy({
          */
         try {
             const {id, username, displayName, _json: {kakao_account}} = profile;
+            const uniqueId = id;
             const provider = 'kakao';
-            const email = kakao_account.email || id;
-            const name = displayName || username;
+            const nick = displayName || username;
+            const email = kakao_account.email;
             
-            const user = await User.findOne({where: {email, provider}});
+            const user = await User.findOne({where: {uniqueId, provider}});
             if (user) {
-                await user.update({email, name});
-                return done(null, user);
+                await user.update({email, nick});
+                /* passport.serialize(func) 의 인자 func 호출 */
+                /* session 에 저장할 데이터를 전달한다. */
+                return done(null, {user, message: 'loaded'});
             }
             
             const created = await User.create({
-                email: email || id,
+                uniqueId,
                 provider,
-                name, displayName,
+                nick,
             });
-            return done(null, created);
+            /* passport.serialize(func) 의 인자 func 호출 */
+            /* session 에 저장할 데이터를 전달한다. */
+            return done(null, {user: created, message: 'created'});
             
         } catch (err) {
             done(err);

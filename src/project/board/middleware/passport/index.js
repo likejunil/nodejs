@@ -6,7 +6,8 @@ const kakao = require('./strategy/kakao.js');
 /** session 에 저장 */
 const serialize = () => {
     /* session.passport.user 생성 */
-    passport.serializeUser((req, user, done) => {
+    passport.serializeUser((req, data, done) => {
+        const {user} = data;
         if (!user) return done(null);
         /* session.passport.user = user.id */
         /* 실제로 session.passport.user 에 저장할 내용을 지정 */
