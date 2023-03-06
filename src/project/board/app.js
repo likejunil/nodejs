@@ -11,9 +11,9 @@ const useCookie = require('./middleware/cookie/cookie.js');
 const useSession = require('./middleware/session/session.js');
 const initPassport = require('./middleware/passport');
 const {sequelize} = require('./repository/sequelize/associate.js');
+const {validator} = require('./middleware/validator');
 
 const test = require('./middleware/test/test.js');
-const {isLoggedIn} = require('./middleware/passport/checkLogin.js');
 const auth = require('./router/auth.js');
 const user = require('./router/user.js');
 const band = require('./router/band.js');
@@ -69,13 +69,16 @@ app.use(passport.session())
 app.use('/test', test);
 
 /* 진행 과정 확인 */
+/*
 app.use((req, res, next) => {
     log();
     next();
     log();
 })
+ */
 
 /* router */
+app.use(validator);
 app.use('/auth', auth);
 app.use('/user', user);
 app.use('/band', band);
