@@ -7,7 +7,7 @@ const {User} = require('../../../repository/sequelize/model/user.js');
 /* 인증을 마치면 결과를 done() 을 통해 전달한다. */
 /* router 가 인증 결과를 받고 최종 처리를 한다. */
 const local = () => passport.use(new LocalStrategy({
-        usernameField: 'email',
+        usernameField: 'uniqueId',
         passwordField: 'password',
         passReqToCallback: true,
     },
@@ -19,10 +19,10 @@ const local = () => passport.use(new LocalStrategy({
      *  -> done(system-error, user-info, assist-info);
      *  -> user 가 존재하지 않을 경우 user-info = false 로 할당
      */
-    async (req, email, plain, done) => {
+    async (req, uniqueId, plain, done) => {
         const provider = 'local';
         try {
-            const user = await User.findOne({where: {email, provider}});
+            const user = await User.findOne({where: {uniqueId, provider}});
             if (!user) {
                 console.error('User does not exist.');
                 return done(null, false, {message: 'Check the user information.'})

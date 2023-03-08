@@ -37,7 +37,7 @@ const createAccount = async (info) => {
     /* password 는 필수요소이며 조건을 검사해야 한다. */
     const {password: plain} = info;
     const password = await generatePassword(plain)
-    /* undefined 는 null 로 입력된다. */
+    /* undefined 는 query 에서 제외된다. */
     return await User.create({...info, password});
 };
 
@@ -98,7 +98,7 @@ const login = async (req, res, next) => {
         /* req.log(user) 에 전달한 user 인자가 func(user) 의 인자로 전달됨 */
         /* 넘겨진 인자로부터 session 에 저장할 데이터를 가공 */
         /* session 에 정보 저장 후 req.login(func) 에 인자로 전달된 func 이 호출됨 */
-        req.login(user, (err) => {
+        req.login({user, type: 'local'}, (err) => {
             if (err) {
                 err.status = 500;
                 return next(err);

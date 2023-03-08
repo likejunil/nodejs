@@ -1,5 +1,8 @@
 const {User} = require('../repository/sequelize/model/user');
-const {raiseError} = require('../util/error.js');
+const {raiseError, setError} = require('../util/error.js');
+const bcrypt = require('bcrypt');
+const {bcrypt: {salt}} = require('../config/config.js');
+
 
 const attributes = [
     'id',
@@ -96,9 +99,10 @@ const updateById = async (req, res, next) => {
         .then(checkLocalUser)
         .then(user => {
             const fileds = filterModifyField(req.body);
-            user.update({...fileds});
-            res.json(user);
+            /* undefined 항목은 query 에서 제외된다. */
+            return user.update({...fileds});
         })
+        .then(user => res.json(user))
         .catch(next);
 };
 
@@ -116,10 +120,33 @@ const deleteById = async (req, res, next) => {
         .catch(next);
 };
 
+/**
+ * PATCH /user/:id/pw
+ *  - provider === 'local' 인 사용자만 패스워드 변경 가능
+ */
+const changePassword = async (req, res, next) => {
+    const {id} = req.params;
+    const loaded = await User.findOne({
+        where: {id},
+        /* 추후 데이터를 갱신하기 위해서는 pk 를 조회해야 한다. */
+        attributes: ['id', 'password'],
+    });
+    
+    const {old, plain} = req.body;
+    const match = await bcrypt.compare(old, loaded.password);
+    if (!match) return next(setError(400, 'Password does not match.'));
+    
+    const password = await bcrypt.hash(plain, salt);
+    loaded.update({password})
+        .then(() => res.json({message: 'Updated.'}))
+        .catch(next);
+};
+
 module.exports = {
     getUser,
     findById,
     findUsers,
     updateById,
     deleteById,
+    changePassword,
 };

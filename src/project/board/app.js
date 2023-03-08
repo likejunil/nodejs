@@ -5,13 +5,14 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
+/* 비동기 에러를 잡아서 에러 핸들러로 보내준다. */
+require('express-async-errors');
 
 const config = require('./config/config.js');
 const useCookie = require('./middleware/cookie/cookie.js');
 const useSession = require('./middleware/session/session.js');
 const initPassport = require('./middleware/passport');
 const {sequelize} = require('./repository/sequelize/associate.js');
-const {validator} = require('./middleware/validator');
 
 const test = require('./middleware/test/test.js');
 const auth = require('./router/auth.js');
@@ -78,7 +79,6 @@ app.use((req, res, next) => {
  */
 
 /* router */
-app.use(validator);
 app.use('/auth', auth);
 app.use('/user', user);
 app.use('/band', band);
@@ -96,10 +96,14 @@ app.use((req, res, next) => {
 /* 에러 핸들러는 반드시 인자가 4개여야 한다. */
 app.use((err, req, res, next) => {
     res.status(err.status || 500);
-    res.json({
+    const json = {
         result: "failed",
         message: err.message,
-    });
+    };
+    if (err.json)
+        json.data = err.json;
+    
+    res.json(json);
 });
 
 sequelize.sync({force: false})

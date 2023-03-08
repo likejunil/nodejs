@@ -1,14 +1,13 @@
-const {Router} = require('express');
-const auth = require('./auth.js');
+const {validationResult} = require('express-validator');
+const {setError} = require('../../util/error.js');
 
-const url = {
-    auth: '/auth',
-    user: '/user',
+const validator = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(setError(400, 'Please check the input value.', errors.array()));
+    }
+    next();
 };
-
-const validator = new Router();
-
-validator.use(url.auth,
 
 module.exports = {
     validator,
