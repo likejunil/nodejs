@@ -1,9 +1,9 @@
-const {body} = require("express-validator");
 const {passwordRegex, uniqueIdRegex} = require('./regex.js');
 
-const uniqueId = (key) => {
+const uniqueId = (target, key) => {
     const field = key ?? 'uniqueId';
-    return body(field)
+    // return body(field)
+    return target(field)
         /* checkNull: true => null 일 경우 not exist */
         /* checkFalsy: true => "", 0, false, null 일 경우 not exist */
         .exists({checkNull: true, checkFalsy: true})
@@ -16,8 +16,9 @@ const uniqueId = (key) => {
         .withMessage('You can use uppercase and lowercase letters, numbers, and underscores.(min:1, max:12)')
 };
 
-const password = (key) => {
-    return body(key ?? 'password')
+const password = (target, key) => {
+    const field = key ?? 'password';
+    return target(field)
         .exists({checkNull: true, checkFalsy: true})
         .withMessage('Password is required.')
         .bail()
