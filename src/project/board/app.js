@@ -106,7 +106,7 @@ app.use((err, req, res, next) => {
     res.json(json);
 });
 
-sequelize.sync({force: false})
+sequelize.sync({force: false, alter: true})
     .then(() => {
         log('- connect to database');
         initPassport();

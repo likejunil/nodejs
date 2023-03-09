@@ -23,6 +23,10 @@ const associate = (db) => {
         foreignKey: 'userId',
         as: 'Group',
     })
+    db.Band.belongsTo(db.User, {
+        foreignKey: 'ownerId',
+        targetKey: 'id',
+    });
 };
 
 module.exports = {

@@ -3,7 +3,6 @@ const {raiseError, setError} = require('../util/error.js');
 const bcrypt = require('bcrypt');
 const {bcrypt: {salt}} = require('../config/config.js');
 
-
 const attributes = [
     'id',
     'uniqueId',
