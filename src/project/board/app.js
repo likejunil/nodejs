@@ -18,6 +18,7 @@ const test = require('./middleware/test/test.js');
 const auth = require('./router/auth.js');
 const user = require('./router/user.js');
 const band = require('./router/band.js');
+const {fail} = require('./controller/common.js');
 const log = console.log;
 
 const app = express();
@@ -96,14 +97,7 @@ app.use((req, res, next) => {
 /* 에러 핸들러는 반드시 인자가 4개여야 한다. */
 app.use((err, req, res, next) => {
     res.status(err.status || 500);
-    const json = {
-        result: "failed",
-        message: err.message,
-    };
-    if (err.json)
-        json.data = err.json;
-    
-    res.json(json);
+    res.json(fail(err.data || err.message));
 });
 
 sequelize.sync({force: false, alter: true})

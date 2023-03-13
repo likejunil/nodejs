@@ -24,7 +24,6 @@ const validate = (method, url) => {
             ];
         
         default:
-            console.error(`check ${method.toLowerCase()}|${url}`);
             return (req, res, next) => next();
     }
 }

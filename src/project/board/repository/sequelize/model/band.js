@@ -20,12 +20,14 @@ const Band = sequelize.define(
 const associate = (db) => {
     db.Band.belongsToMany(db.User, {
         through: 'user_band',
-        foreignKey: 'userId',
-        as: 'Group',
+        foreignKey: 'groupId',
+        as: 'Member',
     })
+    
     db.Band.belongsTo(db.User, {
-        foreignKey: 'ownerId',
         targetKey: 'id',
+        foreignKey: 'ownerId',
+        as: 'Owner',
     });
 };
 

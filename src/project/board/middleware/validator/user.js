@@ -1,7 +1,8 @@
 const {check, body, query} = require('express-validator');
 const {validator} = require('./index.js');
-const {password} = require('./common.js');
+const {page, size, sort, password, paramId} = require('./common.js');
 const {nickRegex} = require('./regex.js');
+const {validateSort} = require("./common");
 
 const changePassword = () => {
     return body('old')
@@ -74,6 +75,11 @@ const validate = (method, url) => {
     switch (`${method.toLowerCase()}|${url}`) {
         case 'get|/':
             return [
+                page(query),
+                size(query),
+                /* validation 을 하면 같은 key 를 가진 여러개의 value 에 대하여 중복이 제거가 된다. */
+                /* 여러개의 sort 를 처리해야 한다면 직접 검증 함수를 구현한다. */
+                sort,
                 ifnick(query),
                 ifemail(query),
                 ifmarried(query),
@@ -82,8 +88,15 @@ const validate = (method, url) => {
                 validator,
             ];
         
+        case 'get|/:id':
+            return [
+                paramId(),
+                validator,
+            ];
+        
         case 'put|/:id':
             return [
+                paramId(),
                 ifnick(body),
                 ifemail(body),
                 ifmarried(body),
@@ -92,8 +105,15 @@ const validate = (method, url) => {
                 validator,
             ];
         
+        case 'delete|/:id':
+            return [
+                paramId(),
+                validator,
+            ];
+        
         case 'patch|/:id/pw':
             return [
+                paramId(),
                 password(body, 'old'),
                 password(body, 'plain'),
                 changePassword(),
@@ -101,7 +121,6 @@ const validate = (method, url) => {
             ];
         
         default:
-            console.error(`check ${method.toLowerCase()}|${url}`);
             return (req, res, next) => next();
     }
 };

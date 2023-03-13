@@ -3,6 +3,7 @@ const {bcrypt: {salt}} = require('../../config/config.js');
 const passport = require('passport');
 const {User} = require('../../repository/sequelize/model/user.js');
 const {setError, raiseError} = require('../../util/error.js');
+const {succeed} = require('../common.js');
 
 /**
  * << 해당 조건의 사용자가 없음을 확인하라 >>
@@ -29,7 +30,6 @@ const generatePassword = async (plain) => {
 
 /**
  * << 주어진 정보로 사용자를 생성하라 >>
- *
  * @param info
  * @returns 생성한 User Model
  */
@@ -52,8 +52,7 @@ const filterJoinField = (input) => {
 }
 
 /**
- * << router >>
- * /auth/join
+ * POST /auth/join
  */
 const join = async (req, res, next) => {
     const fields = filterJoinField(req.body);
@@ -63,13 +62,12 @@ const join = async (req, res, next) => {
     /* 사용자의 유일성은 uniqueId, provider 의 조합으로 결정 */
     checkUserNotExist(uniqueId, provider)
         .then(() => createAccount({...fields, provider}))
-        .then(created => res.json({message: `User created successfully, id=|${created?.id}| nick=|${created?.nick}|`}))
+        .then(created => res.json(succeed(`User created successfully, id=|${created?.id}|`)))
         .catch(next);
 };
 
 /**
- * << router >>
- * /auth/login
+ * POST /auth/login
  *
  * 1. 로그인 요청이 auth.login() 라우터에 전달된다.
  * 2. auth.login() 라우터는 passport.authenticate() 를 통해 인증 전략을 선택하고 인증 과정을 맡긴다.
@@ -104,20 +102,19 @@ const login = async (req, res, next) => {
                 return next(err);
             }
             
-            res.json({message: 'You are logged in.'});
+            res.json(succeed('You are logged in.'));
         });
     })(req, res, next);
 };
 
 /**
- * << router >>
- * /auth/logout
+ * POST /auth/logout
  */
 const logout = (req, res, next) => {
     /* req.logout() 에 의해 req.session.passport 의 내용이 삭제 */
     /* req.logout(func) 의 인자 func 는 passport.deserialize 가 종료된 후 호출 */
     req.logout(() => {
-        res.json({message: 'You are logged out.'});
+        res.json(succeed('You are logged out.'));
     });
 };
 

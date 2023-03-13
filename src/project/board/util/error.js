@@ -1,7 +1,7 @@
-const setError = (status, message, json) => {
+const setError = (status, message, data) => {
     const error = new Error(message);
     error.status = status;
-    if (json) error.json = json;
+    if (data) error.data = data;
     return error;
 }
 
