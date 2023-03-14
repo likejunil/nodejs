@@ -1,5 +1,6 @@
-const {query, param} = require('express-validator');
+const {query, param, check} = require('express-validator');
 const {passwordRegex, uniqueIdRegex} = require('./regex.js');
+const {tagRegex} = require('./regex.js');
 
 const uniqueId = (target, key) => {
     const field = key ?? 'uniqueId';
@@ -91,6 +92,20 @@ const paramId = () => {
         .withMessage('Id must be a positive integer.');
 };
 
+const iftag = (target, key) => {
+    const what = target ?? check;
+    const field = key ?? 'tag';
+    return what(field).if(what(field).exists())
+        .customSanitizer((value, {req}) => {
+            return value.trim()
+                .replaceAll(',', ' ')
+                .split(' ')
+                .map(m => m.trim())
+                .filter(m => m.match(tagRegex))
+                .map(m => m.slice(1).toLowerCase());
+        });
+}
+
 module.exports = {
     page,
     size,
@@ -98,4 +113,5 @@ module.exports = {
     paramId,
     uniqueId,
     password,
+    iftag,
 };

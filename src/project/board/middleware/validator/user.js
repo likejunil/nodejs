@@ -58,11 +58,10 @@ const birthday = (target, key, necessary = true) => {
     return (necessary ? what(field) : what(field).if(what(field).exists()))
         .isISO8601()
         .withMessage('Please check the date format.')
+        .bail()
         .toDate()
-        .custom((value) => {
-            if (value < new Date()) return true;
-            throw new Error('Birthday must be a date in the past.');
-        });
+        .isBefore(Date())
+        .withMessage('Birthday must be a date in the past.');
 };
 
 const ifnick = (t, k) => nick(t, k, false);

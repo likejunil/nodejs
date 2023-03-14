@@ -1,6 +1,7 @@
 const {Router} = require('express');
 const {isLoggedIn} = require("../middleware/passport/checkLogin");
 const {createOne, findById, findBands} = require('../controller/band.js');
+const {validate} = require('../middleware/validator/band.js');
 
 const band = new Router();
 
@@ -9,8 +10,8 @@ const band = new Router();
 band.use('/', isLoggedIn);
 
 band.route('/')
-    .post(createOne)
-    .get(findBands);
+    .post(validate('post', '/'), createOne)
+    .get(validate('get', '/'), findBands);
 
 band.route('/:id')
     .get(findById)

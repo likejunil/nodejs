@@ -1,4 +1,6 @@
 const {Band} = require('../repository/sequelize/model/band.js');
+const {Hashtag} = require('../repository/sequelize/model/hashtag.js');
+const {sequelize} = require('../repository/sequelize/initialize.js');
 const {succeed} = require('./common.js');
 const {User} = require("../repository/sequelize/model/user");
 
@@ -41,10 +43,29 @@ const getBands = async (query) => {
  * POST /band
  */
 const createOne = async (req, res, next) => {
-    const {name, desc} = req.body;
-    const user = req.user;
-    const saved = await user.createGroup({name, desc, ownerId: user.id})
-    res.json(succeed(`A new group has been created, bandId=|${saved.id}|`));
+    const t = await sequelize.transaction();
+    const tr = {transaction: t};
+    try {
+        const {name, desc, tag: tags} = req.body;
+        const user = req.user;
+        const band = await Band.create({name, desc, ownerId: user.id}, tr);
+        await band.addMember(user, tr);
+        
+        /* tag 가 존재한다면 validation 에 의해서 array 로 변환된다. */
+        if (tags && tags.length > 0) {
+            /* findOrCreate() 는 transaction 을 지원하지 않는다. */
+            const map = tags.map(tag => Hashtag.findOrCreate({where: {tag}}));
+            const list = await Promise.all(map);
+            /* list = [[model, true], [model.true], ...] */
+            await band.addTag(list.map(m => m[0]), tr);
+        }
+        await t.commit();
+        res.json(succeed(`A new group has been created, bandId=|${band.id}|`));
+        
+    } catch (err) {
+        await t.rollback();
+        next(err);
+    }
 };
 
 /**

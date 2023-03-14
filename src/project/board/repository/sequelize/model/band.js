@@ -1,6 +1,7 @@
 const {DataTypes} = require('sequelize');
 const {sequelize, defaultOpt} = require('../initialize.js');
 
+/* group */
 const Band = sequelize.define(
     'Band',
     {
@@ -27,7 +28,13 @@ const associate = (db) => {
     db.Band.belongsTo(db.User, {
         targetKey: 'id',
         foreignKey: 'ownerId',
-        as: 'Owner',
+        as: 'Manager',
+    });
+    
+    db.Band.belongsToMany(db.Hashtag, {
+        through: 'band_tag',
+        foreignKey: 'bandId',
+        as: 'Tag',
     });
 };
 

@@ -100,7 +100,8 @@ app.use((err, req, res, next) => {
     res.json(fail(err.data || err.message));
 });
 
-sequelize.sync({force: false, alter: true})
+/* alter 의 경우 index 를 반복해서 계속 생성하는 문제가 있음 */
+sequelize.sync({force: false, alter: false})
     .then(() => {
         log('- connect to database');
         initPassport();
