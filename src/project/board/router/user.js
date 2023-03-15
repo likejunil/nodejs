@@ -1,8 +1,16 @@
 const {Router} = require('express');
-const {findById, findUsers, updateById, deleteById, changePassword} = require('../controller/user.js');
-const {isLoggedIn} = require('../middleware/passport/checkLogin.js');
 const {setError} = require('../util/error.js');
+const {isLoggedIn} = require('../middleware/passport/checkLogin.js');
 const {validate} = require('../middleware/validator/user.js');
+const {
+    findById,
+    findUsers,
+    updateById,
+    deleteById,
+    changePassword,
+    joinBand,
+    leaveBand,
+} = require('../controller/user.js');
 
 const user = new Router();
 
@@ -20,10 +28,14 @@ user.use('/', isLoggedIn);
 user.get('/', validate('get', '/'), findUsers);
 
 user.route('/:id')
-    .get(validate('get1', '/:id'), findById)
+    .get(validate('get', '/:id'), findById)
     .put(onlyOwner, validate('put', '/:id'), updateById)
     .delete(onlyOwner, validate('delete', '/:id'), deleteById);
 
 user.patch('/:id/pw', onlyOwner, validate('patch', '/:id/pw'), changePassword);
+
+user.route('/band/:id')
+    .put(validate('put', '/band/:id'), joinBand)
+    .delete(validate('delete', '/band/:id'), leaveBand);
 
 module.exports = user;

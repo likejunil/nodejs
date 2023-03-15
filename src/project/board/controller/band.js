@@ -5,7 +5,7 @@ const {setError, raiseError} = require("../util/error");
 const {sequelize} = require('../repository/sequelize/initialize.js');
 const {Band} = require('../repository/sequelize/model/band.js');
 const {User} = require("../repository/sequelize/model/user");
-const {getTags, findTags} = require('./hashtag.js');
+const {getTags} = require('./hashtag.js');
 
 /**
  1. 밴드 생성
@@ -120,6 +120,8 @@ const findById = async (req, res, next) => {
 
 module.exports = {
     create,
+    getBand,
+    getBands,
     findBands,
     findById,
 };

@@ -119,6 +119,17 @@ const validate = (method, url) => {
                 validator,
             ];
         
+        case 'put|/band/:id':
+            return [
+                paramId(),
+                validator,
+            ];
+        
+        case 'delete|/band/:id':
+            return [
+                paramId(),
+                validator,
+            ];
         default:
             return (req, res, next) => next();
     }

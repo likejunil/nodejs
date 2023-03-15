@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const {bcrypt: {salt}} = require('../config/config.js');
 const {succeed} = require('./common.js');
 const {raiseError, setError} = require('../util/error.js');
+const {getBand} = require('../controller/band.js');
 const {User} = require('../repository/sequelize/model/user');
 
 const attributes = [
@@ -141,6 +142,41 @@ const changePassword = async (req, res, next) => {
         .catch(next);
 };
 
+/**
+ * PUT /user/band/:id
+ */
+const joinBand = async (req, res, next) => {
+    const {id: bandId} = req.params;
+    const user = req.user;
+    getBand(bandId)
+        .then(band => user.addGroups(band))
+        .then(data => {
+            /* 이미 가입되어 있는 band 라면 undefined */
+            /* 가입되었다면 user_band 의 항목을 배열에 담아 반환 */
+            res.json(succeed(data
+                ? 'You have successfully signed up.'
+                : 'You are already signed up.'));
+        })
+        .catch(next)
+}
+
+/**
+ * DELETE /user/band/:id
+ */
+const leaveBand = (req, res, next) => {
+    const {id: bandId} = req.params;
+    const user = req.user;
+    getBand({bandId})
+        .then(band => user.removeGroups(band))
+        .then(data => {
+            /* 삭제한 band 의 수를 반환한다. */
+            res.json(succeed(data === 0
+                ? 'You are not a member of a group.'
+                : 'You have successfully unsubscribed.'));
+        })
+        .catch(next);
+}
+
 module.exports = {
     getUser,
     findById,
@@ -148,4 +184,6 @@ module.exports = {
     updateById,
     deleteById,
     changePassword,
+    joinBand,
+    leaveBand,
 };
