@@ -22,19 +22,19 @@ const associate = (db) => {
     db.Band.belongsToMany(db.User, {
         through: 'user_band',
         foreignKey: 'groupId',
-        as: 'Member',
+        as: 'Members',
     })
     
     db.Band.belongsTo(db.User, {
         targetKey: 'id',
         foreignKey: 'ownerId',
         as: 'Manager',
-    });
+    })
     
     db.Band.belongsToMany(db.Hashtag, {
         through: 'band_tag',
         foreignKey: 'bandId',
-        as: 'Tag',
+        as: 'Tags',
     });
 };
 

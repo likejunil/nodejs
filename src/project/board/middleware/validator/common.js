@@ -92,9 +92,9 @@ const paramId = () => {
         .withMessage('Id must be a positive integer.');
 };
 
-const iftag = (target, key) => {
+const iftags = (target, key) => {
     const what = target ?? check;
-    const field = key ?? 'tag';
+    const field = key ?? 'tags';
     return what(field).if(what(field).exists())
         .customSanitizer((value, {req}) => {
             return value.trim()
@@ -113,5 +113,5 @@ module.exports = {
     paramId,
     uniqueId,
     password,
-    iftag,
+    iftags,
 };

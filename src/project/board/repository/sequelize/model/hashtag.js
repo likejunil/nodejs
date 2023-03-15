@@ -20,7 +20,7 @@ const associate = (db) => {
     db.Hashtag.belongsToMany(db.Band, {
         through: 'band_tag',
         foreignKey: 'tagId',
-        as: 'Group',
+        as: 'Groups',
     });
 }
 

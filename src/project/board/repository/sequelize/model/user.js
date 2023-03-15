@@ -45,7 +45,7 @@ const associate = (db) => {
     db.User.belongsToMany(db.Band, {
         through: 'user_band',
         foreignKey: 'memberId',
-        as: 'Group',
+        as: 'Groups',
     })
 }
 

@@ -1,9 +1,8 @@
-const {User} = require('../repository/sequelize/model/user');
-const {raiseError, setError} = require('../util/error.js');
 const bcrypt = require('bcrypt');
 const {bcrypt: {salt}} = require('../config/config.js');
 const {succeed} = require('./common.js');
-const {validateSort} = require('../middleware/validator/common.js');
+const {raiseError, setError} = require('../util/error.js');
+const {User} = require('../repository/sequelize/model/user');
 
 const attributes = [
     'id',
@@ -20,14 +19,13 @@ const attributes = [
 /* id | uniqueId, provider */
 const getUser = async (query) => {
     const {id, uniqueId, provider} = query;
-    const where = {};
+    
     /* id 만으로 조회 */
-    if (id) {
-        /* await User.findByPk(id); */
-        where.id = id;
-    }
+    if (id) return await User.findByPk(id, {attributes});
+    
+    const where = {};
     /* uniqueId, provider 의 조합으로만 조회 */
-    else if (uniqueId && provider) {
+    if (uniqueId && provider) {
         where.uniqueId = uniqueId;
         where.provider = provider;
     }

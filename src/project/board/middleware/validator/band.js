@@ -1,6 +1,7 @@
 const {validator} = require('./index.js')
 const {check, body, query} = require('express-validator');
-const {page, size, sort, iftag} = require('./common.js');
+const {page, size, sort, iftags} = require('./common.js');
+const {paramId} = require("./common");
 
 const name = (target, key, necessary = true) => {
     const what = target ?? check;
@@ -17,7 +18,7 @@ const validate = (method, url) => {
     switch (`${method.toLowerCase()}|${url}`) {
         case 'post|/':
             return [
-                iftag(body),
+                iftags(body),
                 name(body),
                 validator,
             ];
@@ -30,6 +31,12 @@ const validate = (method, url) => {
                 /* 여러개의 sort 를 처리해야 한다면 직접 검증 함수를 구현한다. */
                 sort,
                 ifname(body),
+                validator,
+            ];
+        
+        case 'get|/:id':
+            return [
+                paramId(),
                 validator,
             ];
     }

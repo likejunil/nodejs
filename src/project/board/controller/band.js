@@ -1,8 +1,11 @@
-const {Band} = require('../repository/sequelize/model/band.js');
-const {Hashtag} = require('../repository/sequelize/model/hashtag.js');
-const {sequelize} = require('../repository/sequelize/initialize.js');
+/* [Op] 사용법 => https://sequelize.org/docs/v6/core-concepts/model-querying-basics/ */
+const {Op} = require('sequelize');
 const {succeed} = require('./common.js');
+const {setError, raiseError} = require("../util/error");
+const {sequelize} = require('../repository/sequelize/initialize.js');
+const {Band} = require('../repository/sequelize/model/band.js');
 const {User} = require("../repository/sequelize/model/user");
+const {getTags, findTags} = require('./hashtag.js');
 
 /**
  1. 밴드 생성
@@ -11,54 +14,78 @@ const {User} = require("../repository/sequelize/model/user");
  4. 밴드 삭제
  */
 
-const attributes = ['id', 'name', 'desc', 'ownerId',];
+const attributes = [
+    'id',
+    'name',
+    'desc',
+    'ownerId',
+];
 
-const getBand = async (query) => {
-    const {id, name} = query;
-    const where = {};
-    if (id != null) where.id = id; else if (name != null) where.name = name;
-    
-    return await Band.findOne({where, attributes});
+const include = {
+    model: User,
+    as: 'Members',
+    attributes: ['id', 'uniqueId', 'nick'],
+    through: {attributes: []},
+    /* true: inner join */
+    /* false: left outer join */
+    required: false,
 };
 
-const getBands = async (query) => {
-    const {name, desc, ownerId} = query;
+const getBand = async (query, members = false) => {
+    const {id, name} = query;
+    
+    const where = {};
+    if (id != null) {
+        where.id = id;
+    } else if (name != null) {
+        where.name = name;
+    }
+    
+    const options = {attributes, where};
+    if (members) options.include = include;
+    
+    return await Band.findOne(options);
+};
+
+const getBands = async (query, members = false) => {
+    const {name, ownerId} = query;
     const {page, size, offset, limit, sort} = query;
     
     const where = {};
-    if (name != null) where.name = name;
-    if (desc != null) where.desc = desc;
+    if (name != null) where.name = {[Op.like]: `%${name}%`};
     if (ownerId != null) where.ownerId = ownerId;
     
-    const {count, rows: bands} = await Band.findAndCountAll({
-        where, attributes, offset, limit, sort, include: {
-            model: User, attributes: ['id', 'nick', 'name'],
-        },
-    });
+    const options = {attributes, where, sort, offset, limit,};
+    if (members) options.include = include
+    const {count, rows: bands} = await Band.findAndCountAll(options);
     
     return {count, page, size, bands}
 };
 
+const checkBand = (band) => band ?? raiseError(400, 'Band does not exist.');
+
 /**
  * POST /band
  */
-const createOne = async (req, res, next) => {
+const create = async (req, res, next) => {
     const t = await sequelize.transaction();
     const tr = {transaction: t};
     try {
-        const {name, desc, tag: tags} = req.body;
+        const {name, desc, tags} = req.body;
         const user = req.user;
+        
+        /* 이미 존재하는지 확인 */
+        const load = await getBand({name});
+        if (load) return next(setError(400, 'This name already exists.'));
+        
+        /* 생성하고 Manager 를 회원으로 연결 */
         const band = await Band.create({name, desc, ownerId: user.id}, tr);
         await band.addMember(user, tr);
         
-        /* tag 가 존재한다면 validation 에 의해서 array 로 변환된다. */
-        if (tags && tags.length > 0) {
-            /* findOrCreate() 는 transaction 을 지원하지 않는다. */
-            const map = tags.map(tag => Hashtag.findOrCreate({where: {tag}}));
-            const list = await Promise.all(map);
-            /* list = [[model, true], [model.true], ...] */
-            await band.addTag(list.map(m => m[0]), tr);
-        }
+        /* 태그를 불러와서 연결 */
+        const list = await getTags(tags);
+        if (list && list.length > 0) await band.addTags(list, tr);
+        
         await t.commit();
         res.json(succeed(`A new group has been created, bandId=|${band.id}|`));
         
@@ -73,8 +100,12 @@ const createOne = async (req, res, next) => {
  */
 const findBands = async (req, res, next) => {
     const {query} = req;
-    const {count, page, size, bands} = await getBands(query);
-    res.json(succeed(bands, page, size, count));
+    getBands(query)
+        .then(data => {
+            const {count, page, size, bands} = data;
+            res.json(succeed(bands, page, size, count));
+        })
+        .catch(next);
 };
 
 /**
@@ -82,9 +113,13 @@ const findBands = async (req, res, next) => {
  */
 const findById = async (req, res, next) => {
     const {id} = req.params;
-    
+    getBand({id}, true)
+        .then(band => res.json(succeed(checkBand(band))))
+        .catch(next);
 };
 
 module.exports = {
-    createOne, findBands, findById,
+    create,
+    findBands,
+    findById,
 };
