@@ -18,6 +18,7 @@ const test = require('./middleware/test/test.js');
 const auth = require('./router/auth.js');
 const user = require('./router/user.js');
 const band = require('./router/band.js');
+const tag = require('./router/hashtag.js');
 const {fail} = require('./controller/common.js');
 const log = console.log;
 
@@ -83,6 +84,7 @@ app.use((req, res, next) => {
 app.use('/auth', auth);
 app.use('/user', user);
 app.use('/band', band);
+app.use('/tag', tag);
 
 /* not found */
 app.use((req, res, next) => {

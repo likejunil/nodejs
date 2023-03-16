@@ -1,6 +1,7 @@
 /* [Op] 사용법 => https://sequelize.org/docs/v6/core-concepts/model-querying-basics/ */
 const {Op} = require('sequelize');
-const {Hashtag} = require("../repository/sequelize/model/hashtag");
+const {Hashtag} = require("../repository/sequelize/model/hashtag.js");
+const {succeed} = require('../controller/common.js');
 
 /* 존재하는 tag 를 조회한다. */
 /* 없으면 null 반환 */
@@ -8,7 +9,7 @@ const findTag = async (tag) => tag && await HashTag.findOne({where: {tag}});
 
 const findTags = async (tags) => {
     if (tags && tags.length > 0) {
-        return await HashTag.findAll({where: {tag: {[Op.in]: tags},}});
+        return await Hashtag.findAll({where: {tag: {[Op.in]: tags},}});
     }
 };
 
@@ -24,8 +25,33 @@ const getTags = async (tags) => {
     }
 }
 
+/**
+ * GET /tag
+ */
+const find = async (req, res, next) => {
+    const {at, key: tags} = req.query;
+    const {page, size, offset, limit, sort} = req.query;
+    
+    try {
+        const list = await findTags(tags);
+        switch (at) {
+            case 'band':
+                
+                break;
+            case 'board':
+            case 'content':
+            case 'all':
+                break;
+        }
+        
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     findTag,
     findTags,
     getTags,
+    find,
 };
