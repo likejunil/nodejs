@@ -10,7 +10,7 @@ const Band = sequelize.define(
             allowNull: false,
             unique: true,
         },
-        desc: DataTypes.TEXT,
+        intro: DataTypes.TEXT,
     },
     {
         ...defaultOpt,

@@ -1,56 +1,9 @@
 const bcrypt = require('bcrypt');
 const {bcrypt: {salt}} = require('../config/config.js');
 const {succeed} = require('./common.js');
-const {raiseError, setError} = require('../util/error.js');
-const {getBand} = require('../controller/band.js');
-const {User} = require('../repository/sequelize/model/user');
-
-const attributes = [
-    'id',
-    'uniqueId',
-    'provider',
-    'nick',
-    'email',
-    'age',
-    'married',
-    'birthday',
-];
-
-/* 유니크한 컬럼을 인자로 넘겨 단건의 사용자를 조회한다. */
-/* id | uniqueId, provider */
-const getUser = async (query) => {
-    const {id, uniqueId, provider} = query;
-    
-    /* id 만으로 조회 */
-    if (id) return await User.findByPk(id, {attributes});
-    
-    const where = {};
-    /* uniqueId, provider 의 조합으로만 조회 */
-    if (uniqueId && provider) {
-        where.uniqueId = uniqueId;
-        where.provider = provider;
-    }
-    
-    return await User.findOne({where, attributes});
-};
-
-/* 다양한 컬럼을 인자로 받아서 복수의 사용자를 조회한다. */
-const getUsers = async (query) => {
-    const {uniqueId, provider, nick, email, age, married, birthday} = query;
-    const {page, size, offset, limit, sort} = query;
-    
-    const where = {};
-    if (uniqueId != null) where.uniqueId = uniqueId;
-    if (provider != null) where.provider = provider;
-    if (nick != null) where.nick = nick;
-    if (email != null) where.email = email;
-    if (age != null) where.age = age;
-    if (married != null) where.married = married;
-    if (birthday != null) where.birthday = birthday;
-    
-    const {count, rows: users} = await User.findAndCountAll({where, attributes, offset, limit, sort});
-    return {count, page, size, users};
-};
+const {raiseError} = require('../util/error.js');
+const {getPassword, getUser, getUsers} = require('../repository/user.js');
+const {getBand} = require('../repository/band.js');
 
 /* 사용자가 존재하지 않으면 에러를 발생시킨다. */
 const checkUser = (user) =>
@@ -115,7 +68,11 @@ const deleteById = async (req, res, next) => {
     getUser({id})
         .then(checkLocalUser)
         /* hard delete(완전하게 삭제)를 하려면 force: true */
-        .then(user => user.destroy({force: false}))
+        .then(user => {
+            // todo 2023.0317
+            //  - 세션을 삭제하고 로그아웃을 진행해야 한다.
+            user.destroy({force: false});
+        })
         .then(deleted => res.json(succeed(`User deleted, id=|${deleted.id}|`)))
         .catch(next);
 };
@@ -125,21 +82,21 @@ const deleteById = async (req, res, next) => {
  *  - provider === 'local' 인 사용자만 패스워드 변경 가능
  */
 const changePassword = async (req, res, next) => {
-    const {id} = req.params;
-    const loaded = await User.findOne({
-        where: {id},
-        /* 추후 데이터를 갱신하기 위해서는 pk 를 조회해야 한다. */
-        attributes: ['id', 'password'],
-    });
-    
-    const {old, plain} = req.body;
-    const match = await bcrypt.compare(old, loaded.password);
-    if (!match) return next(setError(400, 'Password does not match.'));
-    
-    const password = await bcrypt.hash(plain, salt);
-    loaded.update({password})
-        .then(() => res.json(succeed(`User Updated, id=|${id}|`)))
-        .catch(next);
+    try {
+        const {id} = req.params;
+        const loaded = await getPassword({id});
+        
+        const {old, plain} = req.body;
+        const match = await bcrypt.compare(old, loaded.password);
+        if (!match) raiseError(400, 'Password does not match.');
+        
+        const password = await bcrypt.hash(plain, salt);
+        await loaded.update({password});
+        res.json(succeed(`User Updated, id=|${id}|`));
+        
+    } catch (err) {
+        next(err);
+    }
 };
 
 /**
@@ -178,7 +135,6 @@ const leaveBand = (req, res, next) => {
 }
 
 module.exports = {
-    getUser,
     findById,
     findUsers,
     updateById,

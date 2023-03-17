@@ -3,14 +3,14 @@ const {raiseError} = require("../../util/error");
 const {validator} = require('./index.js');
 const {size, page, sort} = require('./common.js');
 const {tagbodyRegex} = require('./regex.js');
+const {Band} = require('../../repository/sequelize/model/band.js');
 
 const at = (target, key, necessary = true) => {
     const what = target ?? check;
     const field = key ?? 'at';
     return (necessary ? what(field) : what(field).if(what(field).exists()))
-        .default('all')
         .trim().notEmpty()
-        .isIn(['all', 'band', 'board', 'content'])
+        .isIn([Band.tableName],);
 }
 
 const key = (target, key, necessary = true) => {

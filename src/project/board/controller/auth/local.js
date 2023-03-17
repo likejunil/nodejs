@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
-const {bcrypt: {salt}} = require('../../config/config.js');
 const passport = require('passport');
-const {User} = require('../../repository/sequelize/model/user.js');
-const {setError, raiseError} = require('../../util/error.js');
+const {bcrypt: {salt}} = require('../../config/config.js');
 const {succeed} = require('../common.js');
+const {setError, raiseError} = require('../../util/error.js');
+const {createUser, getUser} = require('../../repository/user.js');
 
 /**
  * << 해당 조건의 사용자가 없음을 확인하라 >>
@@ -14,16 +14,12 @@ const {succeed} = require('../common.js');
  * @param provider
  */
 const checkUserNotExist = async (uniqueId, provider) => {
-    const user = await User.findOne({where: {uniqueId, provider}});
+    const user = await getUser({uniqueId, provider});
     if (user) raiseError(400, `User already exists. id=|${uniqueId}|`);
 };
 
 /* 패스워드 생성을 위한 조건 검사 */
 const generatePassword = async (plain) => {
-    // todo
-    //  - 정규표현식을 활용하여 패스워드 조건을 검사
-    //  - https://heropy.blog/2018/10/28/regexp/
-    //  - capturing 이해하는데 실패.. ㅜㅠ
     if (!plain) raiseError(400, "Please check your password.");
     return await bcrypt.hash(plain, salt);
 }
@@ -38,7 +34,7 @@ const createAccount = async (info) => {
     const {password: plain} = info;
     const password = await generatePassword(plain)
     /* undefined 는 query 에서 제외된다. */
-    return await User.create({...info, password});
+    return await createUser({...info, password});
 };
 
 /**
